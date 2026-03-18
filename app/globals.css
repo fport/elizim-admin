@@ -48,72 +48,111 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Light Mode — Warm Handcraft Tones (matching elizim-ui) */
+  --background: oklch(0.97 0.01 55);
+  --foreground: oklch(0.20 0.04 30);
+
+  --card: oklch(1 0 0 / 75%);
+  --card-foreground: oklch(0.20 0.04 30);
+
+  --popover: oklch(0.99 0.005 55);
+  --popover-foreground: oklch(0.20 0.04 30);
+
+  --primary: oklch(0.58 0.16 30);
+  --primary-foreground: oklch(0.98 0.01 55);
+
+  --secondary: oklch(0.92 0.03 140);
+  --secondary-foreground: oklch(0.20 0.04 30);
+
+  --muted: oklch(0.94 0.01 55);
+  --muted-foreground: oklch(0.42 0.04 30);
+
+  --accent: oklch(0.90 0.04 10);
+  --accent-foreground: oklch(0.20 0.04 30);
+
+  --destructive: oklch(0.577 0.245 27.325);
+
+  --border: oklch(0.88 0.02 55);
+  --input: oklch(0.88 0.02 55);
+  --ring: oklch(0.58 0.16 30);
+
+  /* Charts */
+  --chart-1: oklch(0.58 0.16 30);
+  --chart-2: oklch(0.62 0.18 155);
+  --chart-3: oklch(0.55 0.12 260);
+  --chart-4: oklch(0.70 0.15 80);
+  --chart-5: oklch(0.65 0.10 340);
+
+  /* Sidebar */
+  --sidebar: oklch(0.96 0.01 55 / 85%);
+  --sidebar-foreground: oklch(0.20 0.04 30);
+  --sidebar-primary: oklch(0.58 0.16 30);
+  --sidebar-primary-foreground: oklch(0.98 0.01 55);
+  --sidebar-accent: oklch(0.58 0.16 30 / 12%);
+  --sidebar-accent-foreground: oklch(0.20 0.04 30);
+  --sidebar-border: oklch(0.58 0.16 30 / 10%);
+  --sidebar-ring: oklch(0.58 0.16 30);
+
+  /* Glass */
+  --glass-blur: 24px;
+  --glass-bg: oklch(1 0 0 / 55%);
+  --glass-bg-thick: oklch(1 0 0 / 75%);
+  --glass-border: oklch(0.58 0.16 30 / 10%);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* Dark Mode — Warm Cocoa (matching elizim-ui) */
+  --background: oklch(0.15 0.02 30);
+  --foreground: oklch(0.94 0.01 55);
+
+  --card: oklch(1 0 0 / 3%);
+  --card-foreground: oklch(0.94 0.01 55);
+
+  --popover: oklch(0.18 0.02 30);
+  --popover-foreground: oklch(0.94 0.01 55);
+
+  --primary: oklch(0.68 0.16 30);
+  --primary-foreground: oklch(0.15 0.02 30);
+
+  --secondary: oklch(0.22 0.02 30);
+  --secondary-foreground: oklch(0.94 0.01 55);
+
+  --muted: oklch(0.22 0.02 30);
+  --muted-foreground: oklch(0.65 0.02 55);
+
+  --accent: oklch(0.22 0.02 30);
+  --accent-foreground: oklch(0.94 0.01 55);
+
   --destructive: oklch(0.704 0.191 22.216);
+
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.68 0.16 30);
+
+  /* Charts */
+  --chart-1: oklch(0.68 0.16 30);
+  --chart-2: oklch(0.65 0.18 155);
+  --chart-3: oklch(0.60 0.15 260);
+  --chart-4: oklch(0.75 0.15 80);
+  --chart-5: oklch(0.70 0.12 340);
+
+  /* Sidebar */
+  --sidebar: oklch(0.17 0.02 30 / 50%);
+  --sidebar-foreground: oklch(0.94 0.01 55);
+  --sidebar-primary: oklch(0.68 0.16 30);
+  --sidebar-primary-foreground: oklch(0.15 0.02 30);
+  --sidebar-accent: oklch(1 0 0 / 15%);
+  --sidebar-accent-foreground: oklch(0.94 0.01 55);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.68 0.16 30);
+
+  /* Glass */
+  --glass-blur: 20px;
+  --glass-bg: oklch(1 0 0 / 3%);
+  --glass-bg-thick: oklch(1 0 0 / 7%);
+  --glass-border: oklch(1 0 0 / 10%);
 }
 
 @layer base {
@@ -127,3 +166,25 @@
     @apply font-sans;
   }
 }
+
+/* ── Glass Utilities ── */
+@utility glass-card {
+  background: var(--glass-bg-thick);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px oklch(0 0 0 / 10%);
+}
+
+@utility glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: oklch(0 0 0 / 15%); border-radius: 3px; }
+.dark ::-webkit-scrollbar-thumb { background: oklch(1 0 0 / 20%); }

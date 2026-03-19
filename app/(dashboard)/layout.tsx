@@ -10,6 +10,7 @@ import {
   FileText,
   Instagram,
   Settings,
+  Sparkles,
   LogOut,
   Menu,
   X,
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/urunler", label: "Urunler", icon: Package },
   { href: "/kategoriler", label: "Kategoriler", icon: FolderOpen },
   { href: "/blog", label: "Blog", icon: FileText },
+  { href: "/gorsel-olustur", label: "Gorsel Olustur", icon: Sparkles },
   { href: "/instagram", label: "Instagram", icon: Instagram },
   { href: "/ayarlar", label: "Ayarlar", icon: Settings },
 ];

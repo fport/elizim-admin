@@ -289,3 +289,41 @@ export const instagramApi = {
     return data.suggestion;
   },
 };
+
+// ── AI ──
+
+export interface ProductType {
+  key: string;
+  label: string;
+}
+
+export const aiApi = {
+  getProductTypes: async (): Promise<ProductType[]> => {
+    const res = await fetch(`${API_URL}/api/ai/product-types`, {
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error("Ürün tipleri yüklenemedi");
+    const data = await res.json();
+    return data.types;
+  },
+
+  generateImage: async (
+    imageFile: File,
+    productType: string
+  ): Promise<{ url: string; patternDescription: string; productType: string }> => {
+    const formData = new FormData();
+    formData.append("image", imageFile);
+    formData.append("productType", productType);
+
+    const res = await fetch(`${API_URL}/api/ai/generate-image`, {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Görsel oluşturulamadı");
+    }
+    return res.json();
+  },
+};

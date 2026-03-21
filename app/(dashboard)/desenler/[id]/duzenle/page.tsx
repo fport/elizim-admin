@@ -187,7 +187,7 @@ export default function EditPatternPage({
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title & Slug */}
-        <div className="glass-card rounded-xl p-6 space-y-4">
+        <div className="glass-card rounded-3xl p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Temel Bilgiler</h2>
 
           <div>
@@ -199,7 +199,7 @@ export default function EditPatternPage({
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="Desen basligi"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full text-sm"
             />
           </div>
 
@@ -212,7 +212,7 @@ export default function EditPatternPage({
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               placeholder="desen-slug"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full text-sm"
             />
           </div>
 
@@ -225,13 +225,13 @@ export default function EditPatternPage({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Desen aciklamasi"
               rows={4}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20 resize-none"
+              className="w-full text-sm"
             />
           </div>
         </div>
 
         {/* Price & Details */}
-        <div className="glass-card rounded-xl p-6 space-y-4">
+        <div className="glass-card rounded-3xl p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Fiyat ve Detaylar</h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -246,7 +246,7 @@ export default function EditPatternPage({
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="0.00"
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full text-sm"
               />
             </div>
 
@@ -257,7 +257,7 @@ export default function EditPatternPage({
               <select
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value)}
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full text-sm"
               >
                 {DIFFICULTY_OPTIONS.map((d) => (
                   <option key={d} value={d}>
@@ -279,7 +279,7 @@ export default function EditPatternPage({
                 value={stitchCount}
                 onChange={(e) => setStitchCount(e.target.value)}
                 placeholder="15000"
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full text-sm"
               />
             </div>
 
@@ -292,7 +292,7 @@ export default function EditPatternPage({
                 value={dimensions}
                 onChange={(e) => setDimensions(e.target.value)}
                 placeholder="10x15 cm"
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full text-sm"
               />
             </div>
 
@@ -306,7 +306,7 @@ export default function EditPatternPage({
                 value={colorCount}
                 onChange={(e) => setColorCount(e.target.value)}
                 placeholder="5"
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full text-sm"
               />
             </div>
           </div>
@@ -320,13 +320,13 @@ export default function EditPatternPage({
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               placeholder="cicek, yaprak, geometrik"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full text-sm"
             />
           </div>
         </div>
 
         {/* Formats */}
-        <div className="glass-card rounded-xl p-6 space-y-4">
+        <div className="glass-card rounded-3xl p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Formatlar</h2>
           <div className="flex gap-3">
             {AVAILABLE_FORMATS.map((fmt) => (
@@ -347,11 +347,11 @@ export default function EditPatternPage({
         </div>
 
         {/* Preview Image */}
-        <div className="glass-card rounded-xl p-6 space-y-4">
+        <div className="glass-card rounded-3xl p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Onizleme Gorseli</h2>
 
           <div>
-            <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-6 transition-colors hover:border-primary/50 hover:bg-muted/30">
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border/50 p-6 transition-colors hover:border-primary/50 hover:bg-muted/30">
               <Upload className="mb-2 size-8 text-muted-foreground" />
               <span className="text-sm font-medium text-muted-foreground">
                 {uploading ? "Yukleniyor..." : "Gorsel yuklemek icin tiklayin"}
@@ -378,7 +378,7 @@ export default function EditPatternPage({
                 value={imageUrlInput}
                 onChange={(e) => setImageUrlInput(e.target.value)}
                 placeholder="veya gorsel URL'si yapistiriniz"
-                className="h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full pl-9 pr-3 text-sm"
               />
             </div>
             <Button
@@ -404,14 +404,14 @@ export default function EditPatternPage({
                 alt="Preview"
                 width={120}
                 height={120}
-                className="size-30 rounded-lg border border-border object-cover"
+                className="size-30 rounded-2xl border border-border object-cover"
               />
             </div>
           )}
         </div>
 
         {/* Active Toggle */}
-        <div className="glass-card rounded-xl p-6">
+        <div className="glass-card rounded-3xl p-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-foreground">Durum</h2>
@@ -437,7 +437,7 @@ export default function EditPatternPage({
 
         {/* Error */}
         {error && (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
             {error}
           </div>
         )}

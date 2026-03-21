@@ -101,7 +101,7 @@ export default function InstagramPage() {
           <Loader2 className="size-8 animate-spin text-primary" />
         </div>
       ) : !posts?.length ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-border py-20">
+        <div className="flex flex-col items-center justify-center glass-card rounded-3xl py-20">
           <ImageIcon className="mb-4 size-12 text-muted-foreground" />
           <p className="text-muted-foreground">
             Henuz Instagram gonderisi yok
@@ -128,7 +128,7 @@ export default function InstagramPage() {
             return (
               <div
                 key={post.id}
-                className="glass-card overflow-hidden rounded-xl"
+                className="glass-card overflow-hidden rounded-3xl"
               >
                 {/* Image */}
                 <div className="relative aspect-square bg-muted">
@@ -146,7 +146,7 @@ export default function InstagramPage() {
                   )}
 
                   {/* Media type badge */}
-                  <div className="absolute right-2 top-2 rounded-lg bg-black/60 p-1.5">
+                  <div className="absolute right-2 top-2 rounded-xl bg-black/60 p-1.5">
                     <MediaIcon className="size-4 text-white" />
                   </div>
                 </div>

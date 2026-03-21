@@ -91,7 +91,7 @@ export default function BlogPage() {
           <Loader2 className="size-8 animate-spin text-primary" />
         </div>
       ) : !filteredPosts?.length ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-border py-20">
+        <div className="flex flex-col items-center justify-center glass-card rounded-3xl py-20">
           <p className="text-muted-foreground">Henuz blog yazisi yok</p>
           <Link href="/blog/yeni" className="mt-4">
             <Button variant="outline" className="gap-2">
@@ -101,10 +101,10 @@ export default function BlogPage() {
           </Link>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <div className="glass-card rounded-3xl overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/50">
+              <tr className="border-b border-border/50 bg-muted/30">
                 <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                   Baslik
                 </th>
@@ -126,7 +126,7 @@ export default function BlogPage() {
               {filteredPosts.map((post) => (
                 <tr
                   key={post.id}
-                  className="border-b border-border last:border-0 hover:bg-muted/30"
+                  className="border-b border-border/50 last:border-0 hover:bg-muted/20"
                 >
                   <td className="px-4 py-3">
                     <p className="font-medium text-foreground">{post.title}</p>
@@ -186,8 +186,8 @@ export default function BlogPage() {
 
       {/* Delete Confirmation */}
       {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="mx-4 w-full max-w-sm rounded-xl border border-border bg-background p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md">
+          <div className="mx-4 w-full max-w-sm glass-modal rounded-3xl p-6">
             <h3 className="text-lg font-semibold text-foreground">
               Yaziyi Sil
             </h3>

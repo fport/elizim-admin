@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Wand2,
   Loader2,
-  Sparkles,
   Trash2,
   Copy,
   Check,
@@ -14,16 +13,17 @@ import {
   Send,
   Eye,
   EyeOff,
+  Download,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { aiApi, customDesignsApi, type CustomDesign } from "@/lib/api";
 
 export default function TasarimUreticiPage() {
-  // Create form
   const [prompt, setPrompt] = useState("");
-  const [title, setTitle] = useState("");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // List
   const [designs, setDesigns] = useState<CustomDesign[]>([]);
@@ -53,6 +53,15 @@ export default function TasarimUreticiPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Auto-resize textarea
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 160) + "px";
+    }
+  }, [prompt]);
+
   async function handleGenerate() {
     if (!prompt.trim()) return;
     setGenerating(true);
@@ -60,10 +69,8 @@ export default function TasarimUreticiPage() {
 
     try {
       const fileName = `design-${Date.now()}.webp`;
-      await aiApi.generateDesign(prompt.trim(), fileName, title.trim() || undefined);
+      await aiApi.generateDesign(prompt.trim(), fileName);
       setPrompt("");
-      setTitle("");
-      // Refresh list, go to page 1
       await fetchDesigns(1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Bir hata olustu");
@@ -95,6 +102,22 @@ export default function TasarimUreticiPage() {
     await navigator.clipboard.writeText(url);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  }
+
+  async function handleDownload(url: string, title: string) {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${title.replace(/[^a-zA-Z0-9-_]/g, "_")}.webp`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    } catch {
+      window.open(url, "_blank");
+    }
   }
 
   // Fullscreen loading overlay
@@ -145,22 +168,17 @@ export default function TasarimUreticiPage() {
           Tasarim Uretici
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Prompt yaz, gorsel olustur. Olusturulan gorseller otomatik kaydedilir.
+          Ne istedigini yaz, AI uretsin.
         </p>
       </div>
 
-      {/* Create form */}
-      <div className="rounded-2xl border border-border bg-card p-5">
-        <div className="space-y-3">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Baslik (opsiyonel) — ornegin: Sevgililer Gunu Tisort"
-            className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-medium outline-none placeholder:text-muted-foreground/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
-          />
-          <div className="flex gap-2">
+      {/* Chat-like input */}
+      <div className="glass-card rounded-3xl p-3">
+        <div className="flex items-end gap-2">
+          <div className="relative flex-1">
+            <Sparkles className="absolute left-4 top-3 size-4 text-primary/40" />
             <textarea
+              ref={textareaRef}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => {
@@ -169,28 +187,29 @@ export default function TasarimUreticiPage() {
                   handleGenerate();
                 }
               }}
-              placeholder="Gorsel icin prompt yazin... (Enter ile gonder)"
-              rows={3}
-              className="flex-1 rounded-xl border border-border bg-background px-4 py-2.5 text-sm leading-relaxed outline-none placeholder:text-muted-foreground/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
+              placeholder="Nasil bir tasarim istiyorsun? Yaz, ben ureteyim..."
+              rows={1}
+              className="w-full !rounded-2xl !border-0 !bg-transparent !py-2.5 !pl-10 !pr-4 text-sm !shadow-none !ring-0 placeholder:text-muted-foreground/50 focus:!ring-0"
+              style={{ resize: "none", minHeight: 44 }}
             />
-            <button
-              onClick={handleGenerate}
-              disabled={!prompt.trim()}
-              className={cn(
-                "flex shrink-0 items-center justify-center self-end rounded-xl px-5 py-2.5 transition-all",
-                "disabled:cursor-not-allowed disabled:opacity-40",
-                prompt.trim()
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl active:scale-[0.97]"
-                  : "bg-muted text-muted-foreground",
-              )}
-            >
-              <Send className="size-5" />
-            </button>
           </div>
+          <button
+            onClick={handleGenerate}
+            disabled={!prompt.trim()}
+            className={cn(
+              "mb-0.5 flex shrink-0 items-center justify-center rounded-2xl p-3 transition-all duration-200",
+              "disabled:cursor-not-allowed disabled:opacity-30",
+              prompt.trim()
+                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:brightness-110 active:scale-[0.95]"
+                : "bg-muted text-muted-foreground",
+            )}
+          >
+            <Send className="size-[18px]" />
+          </button>
         </div>
 
         {error && (
-          <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
+          <div className="mx-1 mt-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300">
             {error}
           </div>
         )}
@@ -200,7 +219,7 @@ export default function TasarimUreticiPage() {
       <div>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold">
-            Kayitli Tasarimlar
+            Tasarimlar
             {total > 0 && (
               <span className="ml-2 text-sm font-normal text-muted-foreground">
                 ({total})
@@ -214,13 +233,13 @@ export default function TasarimUreticiPage() {
             <Loader2 className="size-8 animate-spin text-primary" />
           </div>
         ) : designs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border py-16">
+          <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border/50 py-16">
             <ImageIcon className="mb-3 size-12 text-muted-foreground/30" />
             <p className="text-sm font-medium text-muted-foreground">
               Henuz tasarim yok
             </p>
             <p className="mt-1 text-xs text-muted-foreground/60">
-              Yukaridaki alandan ilk tasariminizi olusturun
+              Yukariya ne istedigini yaz, hemen ureteyim
             </p>
           </div>
         ) : (
@@ -230,10 +249,10 @@ export default function TasarimUreticiPage() {
                 <div
                   key={d.id}
                   className={cn(
-                    "group overflow-hidden rounded-2xl border transition-all",
+                    "group overflow-hidden rounded-3xl border transition-all",
                     d.isActive
-                      ? "border-border bg-card"
-                      : "border-border/50 bg-muted/30 opacity-60",
+                      ? "border-border/50 bg-card"
+                      : "border-border/30 bg-muted/30 opacity-60",
                   )}
                 >
                   {/* Image */}
@@ -256,7 +275,7 @@ export default function TasarimUreticiPage() {
                       <div className="flex w-full gap-1.5 p-3">
                         <button
                           onClick={() => handleToggleActive(d)}
-                          className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-white/90 py-1.5 text-[11px] font-medium text-black hover:bg-white"
+                          className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-white/90 py-1.5 text-[11px] font-medium text-black backdrop-blur-sm hover:bg-white"
                         >
                           {d.isActive ? (
                             <><EyeOff className="size-3" /> Gizle</>
@@ -265,20 +284,28 @@ export default function TasarimUreticiPage() {
                           )}
                         </button>
                         {d.imageUrl && (
-                          <button
-                            onClick={() => handleCopyUrl(d.id, d.imageUrl!)}
-                            className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-white/90 py-1.5 text-[11px] font-medium text-black hover:bg-white"
-                          >
-                            {copiedId === d.id ? (
-                              <><Check className="size-3 text-green-600" /> Kopyalandi</>
-                            ) : (
-                              <><Copy className="size-3" /> URL</>
-                            )}
-                          </button>
+                          <>
+                            <button
+                              onClick={() => handleDownload(d.imageUrl!, d.title)}
+                              className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-white/90 py-1.5 text-[11px] font-medium text-black backdrop-blur-sm hover:bg-white"
+                            >
+                              <Download className="size-3" /> Indir
+                            </button>
+                            <button
+                              onClick={() => handleCopyUrl(d.id, d.imageUrl!)}
+                              className="flex items-center justify-center gap-1 rounded-xl bg-white/90 px-2.5 py-1.5 text-[11px] font-medium text-black backdrop-blur-sm hover:bg-white"
+                            >
+                              {copiedId === d.id ? (
+                                <Check className="size-3 text-green-600" />
+                              ) : (
+                                <Copy className="size-3" />
+                              )}
+                            </button>
+                          </>
                         )}
                         <button
                           onClick={() => handleDelete(d.id)}
-                          className="flex items-center justify-center rounded-lg bg-red-500/90 px-3 py-1.5 text-white hover:bg-red-600"
+                          className="flex items-center justify-center rounded-xl bg-red-500/90 px-2.5 py-1.5 text-white backdrop-blur-sm hover:bg-red-600"
                         >
                           <Trash2 className="size-3" />
                         </button>
@@ -286,7 +313,7 @@ export default function TasarimUreticiPage() {
                     </div>
 
                     {!d.isActive && (
-                      <span className="absolute end-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white">
+                      <span className="absolute end-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
                         Gizli
                       </span>
                     )}
@@ -294,8 +321,7 @@ export default function TasarimUreticiPage() {
 
                   {/* Info */}
                   <div className="p-3">
-                    <h3 className="truncate text-sm font-bold">{d.title}</h3>
-                    <p className="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
+                    <p className="line-clamp-2 text-[12px] leading-relaxed text-muted-foreground">
                       {d.prompt}
                     </p>
                     <p className="mt-1.5 text-[10px] text-muted-foreground/50">
@@ -318,7 +344,7 @@ export default function TasarimUreticiPage() {
                 <button
                   onClick={() => fetchDesigns(page - 1)}
                   disabled={page <= 1}
-                  className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-sm font-medium disabled:opacity-40"
+                  className="inline-flex items-center gap-1 rounded-2xl border border-border/50 px-3 py-1.5 text-sm font-medium transition-all hover:bg-muted/50 disabled:opacity-40"
                 >
                   <ChevronLeft className="size-4" />
                   Onceki
@@ -329,7 +355,7 @@ export default function TasarimUreticiPage() {
                 <button
                   onClick={() => fetchDesigns(page + 1)}
                   disabled={page >= totalPages}
-                  className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-sm font-medium disabled:opacity-40"
+                  className="inline-flex items-center gap-1 rounded-2xl border border-border/50 px-3 py-1.5 text-sm font-medium transition-all hover:bg-muted/50 disabled:opacity-40"
                 >
                   Sonraki
                   <ChevronRight className="size-4" />

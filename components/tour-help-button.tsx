@@ -121,8 +121,8 @@ export function TourHelpButton() {
       <button
         onClick={() => setOpen(!open)}
         className={cn(
-          "relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
-          "text-sidebar-foreground transition-colors hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
+          "relative flex w-full items-center gap-3 rounded-2xl px-3.5 py-2.5 text-[13px] font-medium",
+          "text-sidebar-foreground/70 transition-all duration-200 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
         )}
       >
         <Sparkles className="size-5 shrink-0" />
@@ -134,7 +134,7 @@ export function TourHelpButton() {
 
       {open && (
         <div
-          className="absolute bottom-full left-0 mb-2 w-72 overflow-hidden rounded-2xl border border-border shadow-2xl"
+          className="absolute bottom-full left-0 mb-2 w-72 overflow-hidden rounded-3xl border border-border/50 shadow-2xl"
           style={{
             background: "var(--glass-bg-thick)",
             backdropFilter: "blur(24px)",

@@ -156,7 +156,7 @@ export default function EditBlogPostPage({
 
       {/* Sibling translations */}
       {siblings.length > 0 && (
-        <div className="glass-card rounded-xl p-4">
+        <div className="glass-card rounded-3xl p-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
             <Globe className="size-4" />
             <span>Diger diller:</span>
@@ -179,7 +179,7 @@ export default function EditBlogPostPage({
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Info */}
-        <div className="glass-card rounded-xl p-6 space-y-4">
+        <div className="glass-card rounded-3xl p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Temel Bilgiler</h2>
 
           <div>
@@ -191,7 +191,7 @@ export default function EditBlogPostPage({
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="Blog yazisi basligi"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full px-3 text-sm"
             />
           </div>
 
@@ -204,7 +204,7 @@ export default function EditBlogPostPage({
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               placeholder="blog-yazisi-slug"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full px-3 text-sm font-mono"
             />
           </div>
 
@@ -217,13 +217,13 @@ export default function EditBlogPostPage({
               onChange={(e) => setExcerpt(e.target.value)}
               placeholder="Kisa ozet"
               rows={2}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20 resize-none"
+              className="w-full px-3 py-2 text-sm resize-none"
             />
           </div>
         </div>
 
         {/* Content - Tiptap */}
-        <div className="glass-card rounded-xl p-6 space-y-4">
+        <div className="glass-card rounded-3xl p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Icerik</h2>
           <TiptapEditor
             content={content}
@@ -233,7 +233,7 @@ export default function EditBlogPostPage({
         </div>
 
         {/* Meta */}
-        <div className="glass-card rounded-xl p-6 space-y-4">
+        <div className="glass-card rounded-3xl p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Meta Bilgiler</h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -246,7 +246,7 @@ export default function EditBlogPostPage({
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="Rehber, Bakim, Haberler"
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full px-3 text-sm"
               />
             </div>
 
@@ -257,7 +257,7 @@ export default function EditBlogPostPage({
               <select
                 value={locale}
                 onChange={(e) => setLocale(e.target.value)}
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full px-3 text-sm"
               >
                 <option value="tr">Turkce</option>
                 <option value="en">English</option>
@@ -275,7 +275,7 @@ export default function EditBlogPostPage({
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               placeholder="el isleri, dantel, geleneksel"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full px-3 text-sm"
             />
           </div>
 
@@ -288,13 +288,13 @@ export default function EditBlogPostPage({
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="https://..."
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full px-3 text-sm"
             />
           </div>
         </div>
 
         {/* Publish Toggle */}
-        <div className="glass-card rounded-xl p-6">
+        <div className="glass-card rounded-3xl p-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-foreground">Yayinla</h2>
@@ -322,7 +322,7 @@ export default function EditBlogPostPage({
 
         {/* Error */}
         {error && (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
             {error}
           </div>
         )}

@@ -340,7 +340,7 @@ export default function PatternsPage() {
                       dimensions: e.target.value,
                     }))
                   }
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full text-sm"
                   placeholder="10x15 cm"
                 />
               </div>
@@ -360,7 +360,7 @@ export default function PatternsPage() {
                       colorCount: e.target.value,
                     }))
                   }
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full text-sm"
                   placeholder="5"
                 />
               </div>
@@ -376,7 +376,7 @@ export default function PatternsPage() {
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, tags: e.target.value }))
                   }
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full text-sm"
                   placeholder="cicek, yaprak, geometrik"
                 />
               </div>
@@ -419,7 +419,7 @@ export default function PatternsPage() {
                   }))
                 }
                 rows={3}
-                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full text-sm"
                 placeholder="Desen aciklamasi..."
               />
             </div>
@@ -436,10 +436,10 @@ export default function PatternsPage() {
                     alt="Preview"
                     width={80}
                     height={80}
-                    className="size-20 rounded-lg border border-border object-cover"
+                    className="size-20 rounded-2xl border border-border object-cover"
                   />
                 )}
-                <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm transition-colors hover:bg-muted">
+                <label className="flex cursor-pointer items-center gap-2 rounded-2xl border border-border px-4 py-2 text-sm transition-colors hover:bg-muted">
                   <Upload className="size-4" />
                   {uploading ? "Yukleniyor..." : "Gorsel Yukle"}
                   <input
@@ -459,7 +459,7 @@ export default function PatternsPage() {
                     value={imageUrlInput}
                     onChange={(e) => setImageUrlInput(e.target.value)}
                     placeholder="veya gorsel URL'si yapistiriniz"
-                    className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full py-2 pl-9 pr-3 text-sm"
                   />
                 </div>
                 <Button
@@ -518,7 +518,7 @@ export default function PatternsPage() {
           <Loader2 className="size-8 animate-spin text-primary" />
         </div>
       ) : !patterns?.length ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-border py-20">
+        <div className="flex flex-col items-center justify-center glass-card rounded-3xl py-20">
           <p className="text-muted-foreground">Henuz desen yok</p>
           <Button
             variant="outline"
@@ -530,10 +530,10 @@ export default function PatternsPage() {
           </Button>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border" data-tour="desen-table">
+        <div className="overflow-x-auto glass-card rounded-3xl overflow-hidden" data-tour="desen-table">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/50">
+              <tr className="border-b border-border/50 bg-muted/30">
                 <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                   Gorsel
                 </th>
@@ -561,7 +561,7 @@ export default function PatternsPage() {
               {patterns.map((pattern, idx) => (
                 <tr
                   key={pattern.id}
-                  className="border-b border-border last:border-0 hover:bg-muted/30"
+                  className="border-b border-border/50 last:border-0 hover:bg-muted/20"
                 >
                   <td className="px-4 py-3">
                     {pattern.previewImageUrl ? (
@@ -570,10 +570,10 @@ export default function PatternsPage() {
                         alt={pattern.title}
                         width={48}
                         height={48}
-                        className="size-12 rounded-lg object-cover"
+                        className="size-12 rounded-2xl object-cover"
                       />
                     ) : (
-                      <div className="flex size-12 items-center justify-center rounded-lg bg-muted text-xs text-muted-foreground">
+                      <div className="flex size-12 items-center justify-center rounded-2xl bg-muted text-xs text-muted-foreground">
                         Yok
                       </div>
                     )}
@@ -653,8 +653,8 @@ export default function PatternsPage() {
 
       {/* Delete Confirmation Dialog */}
       {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="mx-4 w-full max-w-sm rounded-xl border border-border bg-background p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md">
+          <div className="mx-4 w-full max-w-sm glass-modal rounded-3xl p-6">
             <h3 className="text-lg font-semibold text-foreground">
               Deseni Sil
             </h3>

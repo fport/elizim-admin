@@ -168,7 +168,7 @@ function NewProductForm() {
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="Urun basligi"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full text-sm"
             />
           </div>
 
@@ -181,7 +181,7 @@ function NewProductForm() {
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               placeholder="urun-slug"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full text-sm"
             />
           </div>
 
@@ -194,7 +194,7 @@ function NewProductForm() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Urun aciklamasi"
               rows={4}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20 resize-none"
+              className="w-full text-sm resize-none"
             />
           </div>
         </div>
@@ -217,7 +217,7 @@ function NewProductForm() {
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="150.00"
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full text-sm"
               />
             </div>
 
@@ -228,7 +228,7 @@ function NewProductForm() {
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full text-sm"
               >
                 <option value="">Kategori secin</option>
                 {categories?.map((cat) => (
@@ -249,7 +249,7 @@ function NewProductForm() {
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               placeholder="el islemesi, masa ortusu, dantel"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full text-sm"
             />
           </div>
 
@@ -263,7 +263,7 @@ function NewProductForm() {
                 value={deliveryTime}
                 onChange={(e) => setDeliveryTime(e.target.value)}
                 placeholder="3-5 is gunu"
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full text-sm"
               />
             </div>
 
@@ -276,7 +276,7 @@ function NewProductForm() {
                 value={whatsappText}
                 onChange={(e) => setWhatsappText(e.target.value)}
                 placeholder="Bu urun hakkinda bilgi almak istiyorum"
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full text-sm"
               />
             </div>
           </div>
@@ -288,7 +288,7 @@ function NewProductForm() {
 
           {/* Upload */}
           <div>
-            <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-6 transition-colors hover:border-primary/50 hover:bg-muted/30">
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border/50 p-6 transition-colors hover:border-primary/30 hover:bg-muted/30">
               <Upload className="mb-2 size-8 text-muted-foreground" />
               <span className="text-sm font-medium text-muted-foreground">
                 {uploading
@@ -318,7 +318,7 @@ function NewProductForm() {
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="veya gorsel URL'si yapistiriniz"
-                className="h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full pl-9 pr-3 text-sm"
               />
             </div>
             <Button
@@ -345,7 +345,7 @@ function NewProductForm() {
               {images.map((url, index) => (
                 <div
                   key={index}
-                  className="group relative aspect-square overflow-hidden rounded-lg border border-border"
+                  className="group relative aspect-square overflow-hidden rounded-2xl border border-border"
                 >
                   <Image
                     src={url}
@@ -366,7 +366,7 @@ function NewProductForm() {
                     <button
                       type="button"
                       onClick={() => setThumbnailUrl(url)}
-                      className="rounded-lg bg-white/90 p-1.5 text-black hover:bg-white"
+                      className="rounded-2xl bg-white/90 p-1.5 text-black hover:bg-white"
                       title="Kapak gorseli yap"
                     >
                       <Check className="size-4" />
@@ -374,7 +374,7 @@ function NewProductForm() {
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
-                      className="rounded-lg bg-white/90 p-1.5 text-red-600 hover:bg-white"
+                      className="rounded-2xl bg-white/90 p-1.5 text-red-600 hover:bg-white"
                       title="Gorseli kaldir"
                     >
                       <X className="size-4" />
@@ -413,7 +413,7 @@ function NewProductForm() {
 
         {/* Error */}
         {error && (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
             {error}
           </div>
         )}

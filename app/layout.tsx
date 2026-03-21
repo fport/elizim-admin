@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Manrope, Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const manrope = Manrope({
+const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
   subsets: ["latin", "latin-ext"],
   display: "swap",
@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" suppressHydrationWarning>
-      <body className={`${manrope.variable} ${inter.variable} antialiased`}>
+      <body className={`${plusJakarta.variable} ${inter.variable} antialiased`}>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

@@ -263,10 +263,10 @@ export default function CategoriesPage() {
           )}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border" data-tour="kategori-table">
+        <div className="glass-card rounded-3xl overflow-hidden" data-tour="kategori-table">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/50">
+              <tr className="border-b border-border/50 bg-muted/30">
                 <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                   Ad
                 </th>
@@ -285,7 +285,7 @@ export default function CategoriesPage() {
               {categories.map((cat, idx) => (
                 <tr
                   key={cat.id}
-                  className="border-b border-border last:border-0 hover:bg-muted/30"
+                  className="border-b border-border/50 last:border-0 hover:bg-muted/20"
                 >
                   <td className="px-4 py-3 font-medium text-foreground">
                     {cat.name}
@@ -325,8 +325,8 @@ export default function CategoriesPage() {
 
       {/* Delete Confirmation */}
       {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="mx-4 w-full max-w-sm rounded-xl border border-border bg-background p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md">
+          <div className="mx-4 w-full max-w-sm glass-modal rounded-3xl p-6">
             <h3 className="text-lg font-semibold text-foreground">
               Kategoriyi Sil
             </h3>

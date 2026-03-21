@@ -34,10 +34,10 @@ function ToolbarButton({ onClick, isActive, disabled, children, title }: Toolbar
       onClick={onClick}
       disabled={disabled}
       title={title}
-      className={`rounded-md p-1.5 transition-colors ${
+      className={`rounded-xl p-1.5 transition-all duration-150 ${
         isActive
-          ? "bg-primary/15 text-primary"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          ? "bg-primary/12 text-primary shadow-sm"
+          : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
       } disabled:opacity-40 disabled:cursor-not-allowed`}
     >
       {children}
@@ -70,7 +70,7 @@ export function EditorToolbar({ editor, onImageInsert }: EditorToolbarProps) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 border-b border-border px-2 py-1.5">
+    <div className="flex flex-wrap items-center gap-0.5 border-b border-border/50 px-3 py-2">
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleBold().run()}
         isActive={editor.isActive("bold")}

@@ -178,7 +178,7 @@ export function LoginActivity() {
       )}
 
       {/* Session List */}
-      <div className="glass-card rounded-xl p-6">
+      <div className="glass-card rounded-3xl p-6">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Shield className="size-5 text-primary" />
@@ -186,12 +186,12 @@ export function LoginActivity() {
               Son Giris Aktiviteleri
             </h2>
           </div>
-          <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+          <span className="rounded-full bg-muted/60 px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
             {sessions.length} oturum
           </span>
         </div>
 
-        <div className="divide-y divide-border">
+        <div className="divide-y divide-border/50">
           {sessions.map((session) => {
             const { device, isMobile } = parseUserAgent(session.userAgent);
             const isAnomaly = anomalous.some((a) => a.id === session.id);
@@ -201,13 +201,13 @@ export function LoginActivity() {
                 key={session.id}
                 className={cn(
                   "flex items-center gap-4 py-3 first:pt-0 last:pb-0",
-                  isAnomaly && "rounded-lg bg-amber-500/5 px-3"
+                  isAnomaly && "rounded-2xl bg-amber-500/5 px-3"
                 )}
               >
                 {/* Device Icon */}
                 <div
                   className={cn(
-                    "flex size-10 shrink-0 items-center justify-center rounded-lg",
+                    "flex size-10 shrink-0 items-center justify-center rounded-2xl",
                     session.isCurrent
                       ? "bg-primary/10"
                       : isAnomaly

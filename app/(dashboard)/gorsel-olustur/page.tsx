@@ -165,7 +165,7 @@ export default function GorselOlusturPage() {
       <div className="flex-1 space-y-5 overflow-y-auto border-e border-border bg-card/50 p-6">
         {/* Header */}
         <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10">
+          <div className="flex size-9 items-center justify-center rounded-2xl bg-primary/10">
             <Sparkles className="size-4 text-primary" />
           </div>
           <div>
@@ -183,7 +183,7 @@ export default function GorselOlusturPage() {
           {!imagePreview ? (
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex w-full items-center gap-3 rounded-xl border-2 border-dashed border-border p-4 transition-colors hover:border-primary hover:bg-primary/5"
+              className="flex w-full items-center gap-3 rounded-3xl border-2 border-dashed border-border/50 p-4 transition-colors hover:border-primary hover:bg-primary/5"
             >
               <Upload className="size-6 text-muted-foreground" />
               <div className="text-start">
@@ -192,7 +192,7 @@ export default function GorselOlusturPage() {
               </div>
             </button>
           ) : (
-            <div className="relative overflow-hidden rounded-xl border border-border">
+            <div className="relative overflow-hidden rounded-2xl border border-border">
               <Image src={imagePreview} alt="Desen" width={400} height={200} className="h-32 w-full object-cover" />
               <button onClick={clearImage} className="absolute end-2 top-2 rounded-full bg-black/60 p-1.5 text-white hover:bg-black/80">
                 <X className="size-3" />
@@ -231,7 +231,7 @@ export default function GorselOlusturPage() {
               onChange={(e) => setCustomProduct(e.target.value)}
               placeholder="Örn: Kırmızı kadife bir elbise, beyaz ipek mendil, ahşap tepsi..."
               rows={2}
-              className="mt-2 w-full rounded-xl border border-primary/30 bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="mt-2 w-full px-3 py-2 text-sm"
               autoFocus
             />
           )}
@@ -276,7 +276,7 @@ export default function GorselOlusturPage() {
             onChange={(e) => setDetail(e.target.value)}
             placeholder="Örn: Arka plan sade olsun, çiçek motifleri büyük görünsün..."
             rows={2}
-            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="w-full px-3 py-2 text-sm"
           />
         </div>
 
@@ -301,7 +301,7 @@ export default function GorselOlusturPage() {
       {/* Sağ: Sonuç */}
       <div className="flex flex-1 flex-col bg-muted/20 p-6" data-tour="gorsel-preview">
         {error && (
-          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-center dark:border-red-800 dark:bg-red-950">
+          <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-center dark:border-red-800 dark:bg-red-950">
             <p className="text-sm font-medium text-red-700 dark:text-red-300">{error}</p>
             <button onClick={handleGenerate} disabled={!canGenerate} className="mt-1 text-xs text-red-500 underline hover:no-underline">Tekrar dene</button>
           </div>
@@ -328,7 +328,7 @@ export default function GorselOlusturPage() {
             </div>
 
             {result.patternDescription && (
-              <details className="mt-3 rounded-lg border border-border bg-background p-2.5">
+              <details className="mt-3 rounded-2xl border border-border bg-background p-2.5">
                 <summary className="cursor-pointer text-xs font-medium text-muted-foreground">AI açıklaması</summary>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{result.patternDescription}</p>
               </details>
@@ -352,21 +352,21 @@ export default function GorselOlusturPage() {
                     window.open(result.url, "_blank");
                   }
                 }}
-                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border py-2 text-xs font-medium hover:bg-muted"
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-border py-2 text-xs font-medium hover:bg-muted"
               >
                 <Download className="size-3.5" />
                 İndir
               </button>
               <button
                 onClick={handleCopyUrl}
-                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border py-2 text-xs font-medium hover:bg-muted"
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-border py-2 text-xs font-medium hover:bg-muted"
               >
                 {copied ? <Check className="size-3.5 text-green-500" /> : <Copy className="size-3.5" />}
                 {copied ? "Kopyalandı!" : "URL Kopyala"}
               </button>
               <button
                 onClick={handleGenerate}
-                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-primary py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90"
               >
                 <ImagePlus className="size-3.5" />
                 Yeniden

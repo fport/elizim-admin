@@ -246,7 +246,7 @@ export default function NewBlogPostPage() {
               onChange={(e) => setTopic(e.target.value)}
               placeholder="Orn: Karabuk yoresinde el nakisi gelenegi ve modern yorumlari, dantel bakim rehberi, ev tekstilinde 2026 trendleri..."
               rows={4}
-              className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+              className="w-full px-3 py-2.5 text-sm resize-none"
             />
           </div>
 
@@ -290,7 +290,7 @@ export default function NewBlogPostPage() {
               <span className="font-normal text-muted-foreground">(opsiyonel)</span>
             </label>
             {imageUrl ? (
-              <div className="relative overflow-hidden rounded-xl border border-border">
+              <div className="relative overflow-hidden rounded-2xl border border-border/50">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imageUrl}
@@ -309,7 +309,7 @@ export default function NewBlogPostPage() {
               <button
                 type="button"
                 onClick={handleImageUpload}
-                className="flex w-full items-center gap-3 rounded-xl border-2 border-dashed border-border p-4 transition-colors hover:border-primary hover:bg-primary/5"
+                className="flex w-full items-center gap-3 rounded-3xl border-2 border-dashed border-border/50 p-4 transition-colors hover:border-primary hover:bg-primary/5"
               >
                 <ImagePlus className="size-6 text-muted-foreground" />
                 <div className="text-start">
@@ -324,7 +324,7 @@ export default function NewBlogPostPage() {
 
           {/* Error */}
           {error && (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-center dark:border-red-800 dark:bg-red-950">
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-3 text-center dark:border-red-800 dark:bg-red-950">
               <p className="text-sm font-medium text-red-700 dark:text-red-300">
                 {error}
               </p>
@@ -392,7 +392,7 @@ export default function NewBlogPostPage() {
             <Sparkles className="size-3.5 text-primary" />
             Konu
           </label>
-          <p className="rounded-lg bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
+          <p className="rounded-2xl bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
             {topic}
           </p>
         </div>
@@ -408,7 +408,7 @@ export default function NewBlogPostPage() {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             placeholder="Rehber, Bakim..."
-            className="h-9 w-full rounded-lg border border-border bg-background px-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="h-9 w-full px-3 text-sm"
           />
         </div>
 
@@ -419,7 +419,7 @@ export default function NewBlogPostPage() {
             Kapak Gorseli
           </label>
           {imageUrl ? (
-            <div className="relative overflow-hidden rounded-lg border border-border">
+            <div className="relative overflow-hidden rounded-2xl border border-border">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={imageUrl} alt="Kapak" className="h-24 w-full object-cover" />
               <button
@@ -434,7 +434,7 @@ export default function NewBlogPostPage() {
             <button
               type="button"
               onClick={handleImageUpload}
-              className="flex w-full items-center gap-2 rounded-lg border-2 border-dashed border-border p-3 text-xs transition-colors hover:border-primary hover:bg-primary/5"
+              className="flex w-full items-center gap-2 rounded-3xl border-2 border-dashed border-border/50 p-3 text-xs transition-colors hover:border-primary hover:bg-primary/5"
             >
               <ImagePlus className="size-4 text-muted-foreground" />
               <span className="font-medium">Gorsel Yukle</span>
@@ -443,7 +443,7 @@ export default function NewBlogPostPage() {
         </div>
 
         {/* Yayinla Toggle */}
-        <div className="rounded-xl border border-border p-4">
+        <div className="glass-card rounded-3xl p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-semibold">Yayinla</p>
@@ -471,7 +471,7 @@ export default function NewBlogPostPage() {
 
         {/* Error */}
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950">
             <p className="text-xs font-medium text-red-700 dark:text-red-300">
               {error}
             </p>
@@ -543,7 +543,7 @@ export default function NewBlogPostPage() {
               type="text"
               value={activeLocaleData.title}
               onChange={(e) => handleTitleChange(activeTab, e.target.value)}
-              className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm font-medium focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="h-10 w-full px-3 text-sm font-medium"
             />
           </div>
 
@@ -555,7 +555,7 @@ export default function NewBlogPostPage() {
                 type="text"
                 value={activeLocaleData.slug}
                 onChange={(e) => updateLocaleField(activeTab, "slug", e.target.value)}
-                className="h-9 w-full rounded-lg border border-border bg-background px-3 font-mono text-xs focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="h-9 w-full px-3 font-mono text-xs"
               />
             </div>
             <div>
@@ -565,7 +565,7 @@ export default function NewBlogPostPage() {
                 value={activeLocaleData.tags}
                 onChange={(e) => updateLocaleField(activeTab, "tags", e.target.value)}
                 placeholder="etiket1, etiket2"
-                className="h-9 w-full rounded-lg border border-border bg-background px-3 text-xs focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="h-9 w-full px-3 text-xs"
               />
             </div>
           </div>
@@ -577,7 +577,7 @@ export default function NewBlogPostPage() {
               value={activeLocaleData.excerpt}
               onChange={(e) => updateLocaleField(activeTab, "excerpt", e.target.value)}
               rows={2}
-              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+              className="w-full px-3 py-2 text-sm resize-none"
             />
           </div>
 

@@ -1,10 +1,95 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lock, ShieldCheck } from "lucide-react";
+
+const PIN_HASH =
+  "a8d558d909209fbbdf1f0f6b0ecce1f5144f52e29a988b7113c270b504768f09";
+
+async function hashPin(pin: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(pin);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function PinGate({ onSuccess }: { onSuccess: () => void }) {
+  const [pin, setPin] = useState("");
+  const [error, setError] = useState(false);
+  const [checking, setChecking] = useState(false);
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setChecking(true);
+      setError(false);
+      const hash = await hashPin(pin);
+      if (hash === PIN_HASH) {
+        onSuccess();
+      } else {
+        setError(true);
+        setPin("");
+      }
+      setChecking(false);
+    },
+    [pin, onSuccess]
+  );
+
+  return (
+    <div className="w-full max-w-sm">
+      <div className="glass-card rounded-3xl p-8">
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary/10">
+            <Lock className="size-6 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            Erisim Kodu
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Devam etmek icin erisim kodunu girin
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <input
+              type="password"
+              inputMode="numeric"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              placeholder="Erisim kodu"
+              required
+              autoFocus
+              autoComplete="off"
+              className="h-10 w-full text-center text-sm tracking-widest"
+            />
+          </div>
+
+          {error && (
+            <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-center text-sm text-destructive">
+              Yanlis erisim kodu
+            </div>
+          )}
+
+          <Button type="submit" disabled={checking} className="h-10 w-full">
+            {checking ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <>
+                <ShieldCheck className="mr-2 size-4" />
+                Dogrula
+              </>
+            )}
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 function LoginForm() {
   const router = useRouter();
@@ -71,7 +156,7 @@ function LoginForm() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@elizim.art"
+              placeholder="ornek@elizim.art"
               required
               autoComplete="email"
               className="h-10 w-full text-sm"
@@ -124,6 +209,8 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
+  const [pinVerified, setPinVerified] = useState(false);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Suspense
@@ -133,7 +220,11 @@ export default function LoginPage() {
           </div>
         }
       >
-        <LoginForm />
+        {pinVerified ? (
+          <LoginForm />
+        ) : (
+          <PinGate onSuccess={() => setPinVerified(true)} />
+        )}
       </Suspense>
     </div>
   );

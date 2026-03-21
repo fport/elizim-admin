@@ -24,7 +24,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Account Info */}
-      <div className="glass-card rounded-xl p-6 space-y-4">
+      <div className="glass-card rounded-3xl p-6 space-y-4">
         <div className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
             <User className="size-5 text-primary" />
@@ -33,19 +33,19 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3">
+          <div className="flex items-center justify-between rounded-2xl bg-muted/40 px-4 py-3">
             <span className="text-sm text-muted-foreground">Ad</span>
             <span className="text-sm font-medium text-foreground">
               {session?.user?.name || "-"}
             </span>
           </div>
-          <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3">
+          <div className="flex items-center justify-between rounded-2xl bg-muted/40 px-4 py-3">
             <span className="text-sm text-muted-foreground">E-posta</span>
             <span className="text-sm font-medium text-foreground">
               {session?.user?.email || "-"}
             </span>
           </div>
-          <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3">
+          <div className="flex items-center justify-between rounded-2xl bg-muted/40 px-4 py-3">
             <span className="text-sm text-muted-foreground">Oturum ID</span>
             <span className="text-xs font-mono text-muted-foreground">
               {session?.session?.id
@@ -57,7 +57,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Instagram Token */}
-      <div className="glass-card rounded-xl p-6 space-y-4">
+      <div className="glass-card rounded-3xl p-6 space-y-4">
         <div className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
             <Instagram className="size-5 text-primary" />
@@ -65,7 +65,7 @@ export default function SettingsPage() {
           <h2 className="text-lg font-semibold text-foreground">Instagram Entegrasyonu</h2>
         </div>
 
-        <div className="rounded-lg border border-border bg-muted/30 p-4">
+        <div className="rounded-2xl border border-border/50 bg-muted/20 p-4">
           <div className="flex items-start gap-3">
             <Shield className="mt-0.5 size-5 text-muted-foreground" />
             <div>
@@ -88,7 +88,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Logout */}
-      <div className="glass-card rounded-xl p-6">
+      <div className="glass-card rounded-3xl p-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">Oturumu Kapat</h2>

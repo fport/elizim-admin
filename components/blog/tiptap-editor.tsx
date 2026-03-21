@@ -76,7 +76,7 @@ export function TiptapEditor({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-input bg-background">
+    <div className="overflow-hidden rounded-2xl border border-border/50 bg-muted/30">
       <EditorToolbar editor={editor} onImageInsert={handleImageInsert} />
       <EditorContent
         editor={editor}

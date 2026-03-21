@@ -27,7 +27,7 @@ function StatCard({
   loading: boolean;
 }) {
   return (
-    <div className="glass-card rounded-xl p-6">
+    <div className="glass-card rounded-3xl p-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
@@ -35,7 +35,7 @@ function StatCard({
             {loading ? "-" : value}
           </p>
         </div>
-        <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10">
+        <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10">
           <Icon className="size-6 text-primary" />
         </div>
       </div>

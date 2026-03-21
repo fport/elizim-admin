@@ -22,7 +22,7 @@ export function TourTooltip({
       style={{
         maxWidth: 360,
         minWidth: 260,
-        borderRadius: 20,
+        borderRadius: 24,
         overflow: "hidden",
         background:
           "linear-gradient(135deg, var(--glass-bg-thick), var(--glass-bg))",
@@ -162,7 +162,7 @@ export function TourTooltip({
               cursor: "pointer",
               fontFamily: "inherit",
               padding: "7px 10px",
-              borderRadius: 10,
+              borderRadius: 12,
               transition: "color 0.2s",
             }}
           >
@@ -182,7 +182,7 @@ export function TourTooltip({
                 color: "var(--primary-foreground)",
                 background: "var(--primary)",
                 border: "none",
-                borderRadius: 10,
+                borderRadius: 14,
                 cursor: "pointer",
                 transition: "all 0.2s",
                 boxShadow: "0 2px 8px oklch(0.55 0.12 45 / 30%)",

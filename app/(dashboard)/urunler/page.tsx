@@ -54,7 +54,7 @@ export default function ProductsPage() {
             Tum urunleri yonetin
           </p>
         </div>
-        <Link href="/urunler/yeni">
+        <Link href="/urunler/yeni" data-tour="urun-add-btn">
           <Button className="gap-2">
             <Plus className="size-4" />
             Yeni Urun
@@ -78,7 +78,7 @@ export default function ProductsPage() {
           </Link>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <div className="overflow-x-auto rounded-xl border border-border" data-tour="urun-table">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
@@ -103,7 +103,7 @@ export default function ProductsPage() {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {products.map((product, idx) => (
                 <tr
                   key={product.id}
                   className="border-b border-border last:border-0 hover:bg-muted/30"
@@ -150,7 +150,7 @@ export default function ProductsPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
-                      <Link href={`/urunler/${product.id}/duzenle`}>
+                      <Link href={`/urunler/${product.id}/duzenle`} {...(idx === 0 ? { "data-tour": "urun-edit-btn" } : {})}>
                         <Button variant="ghost" size="icon-sm">
                           <Pencil className="size-4" />
                         </Button>
@@ -159,6 +159,7 @@ export default function ProductsPage() {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => handleDelete(product)}
+                        {...(idx === 0 ? { "data-tour": "urun-delete-btn" } : {})}
                       >
                         <Trash2 className="size-4 text-destructive" />
                       </Button>

@@ -4,18 +4,31 @@ import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Globe } from "lucide-react";
 import { blogApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { TiptapEditor } from "@/components/blog/tiptap-editor";
 
 function slugify(text: string): string {
   return text
     .toLowerCase()
+    .replace(/[çÇ]/g, "c")
+    .replace(/[ğĞ]/g, "g")
+    .replace(/[ıİ]/g, "i")
+    .replace(/[öÖ]/g, "o")
+    .replace(/[şŞ]/g, "s")
+    .replace(/[üÜ]/g, "u")
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .trim();
 }
+
+const localeLabels: Record<string, string> = {
+  tr: "Turkce",
+  en: "English",
+  ar: "Arabic",
+};
 
 export default function EditBlogPostPage({
   params,
@@ -44,6 +57,11 @@ export default function EditBlogPostPage({
   });
 
   const post = posts?.find((p) => p.id === id);
+
+  // Find sibling translations
+  const siblings = post?.groupId
+    ? posts?.filter((p) => p.groupId === post.groupId && p.id !== post.id) || []
+    : [];
 
   useEffect(() => {
     if (post && !loaded) {
@@ -122,7 +140,7 @@ export default function EditBlogPostPage({
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link href="/blog">
@@ -135,6 +153,28 @@ export default function EditBlogPostPage({
           <p className="text-sm text-muted-foreground">{post?.title}</p>
         </div>
       </div>
+
+      {/* Sibling translations */}
+      {siblings.length > 0 && (
+        <div className="glass-card rounded-xl p-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <Globe className="size-4" />
+            <span>Diger diller:</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="inline-flex items-center rounded-md bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+              {localeLabels[locale] || locale} (su an)
+            </span>
+            {siblings.map((s) => (
+              <Link key={s.id} href={`/blog/${s.id}/duzenle`}>
+                <span className="inline-flex items-center rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-muted/80 transition-colors cursor-pointer">
+                  {localeLabels[s.locale] || s.locale}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -164,7 +204,7 @@ export default function EditBlogPostPage({
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               placeholder="blog-yazisi-slug"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
             />
           </div>
 
@@ -182,16 +222,13 @@ export default function EditBlogPostPage({
           </div>
         </div>
 
-        {/* Content */}
+        {/* Content - Tiptap */}
         <div className="glass-card rounded-xl p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Icerik (Markdown)</h2>
-
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Blog yazisinin icerigi (Markdown destekli)..."
-            rows={16}
-            className="w-full rounded-lg border border-input bg-background px-3 py-2 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20 resize-y"
+          <h2 className="text-lg font-semibold text-foreground">Icerik</h2>
+          <TiptapEditor
+            content={content}
+            onChange={setContent}
+            placeholder="Blog yazisinin icerigi..."
           />
         </div>
 

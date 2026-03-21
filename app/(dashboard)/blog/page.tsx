@@ -133,9 +133,19 @@ export default function BlogPage() {
                     <p className="text-xs text-muted-foreground">{post.slug}</p>
                   </td>
                   <td className="hidden px-4 py-3 sm:table-cell">
-                    <span className="inline-flex rounded bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                      {post.locale.toUpperCase()}
-                    </span>
+                    <div className="flex gap-1">
+                      <span className="inline-flex rounded bg-primary/15 px-2 py-0.5 text-xs font-medium text-primary">
+                        {post.locale.toUpperCase()}
+                      </span>
+                      {post.groupId && posts
+                        ?.filter((p) => p.groupId === post.groupId && p.id !== post.id)
+                        .map((p) => (
+                          <span key={p.id} className="inline-flex rounded bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                            {p.locale.toUpperCase()}
+                          </span>
+                        ))
+                      }
+                    </div>
                   </td>
                   <td className="hidden px-4 py-3 md:table-cell">
                     <span

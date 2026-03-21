@@ -11,6 +11,8 @@ import {
   Instagram,
   Settings,
   Sparkles,
+  Wand2,
+  Layers,
   LogOut,
   Menu,
   X,
@@ -22,15 +24,19 @@ import { useSession, signOut } from "@/lib/auth-client";
 import { QueryProvider } from "@/components/query-provider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { TourProvider } from "@/components/tour-provider";
+import { TourHelpButton } from "@/components/tour-help-button";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/urunler", label: "Urunler", icon: Package },
-  { href: "/kategoriler", label: "Kategoriler", icon: FolderOpen },
-  { href: "/blog", label: "Blog", icon: FileText },
-  { href: "/gorsel-olustur", label: "Gorsel Olustur", icon: Sparkles },
-  { href: "/instagram", label: "Instagram", icon: Instagram },
-  { href: "/ayarlar", label: "Ayarlar", icon: Settings },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, tourId: "nav-dashboard" },
+  { href: "/urunler", label: "Urunler", icon: Package, tourId: "nav-urunler" },
+  { href: "/desenler", label: "Desenler", icon: Layers, tourId: "nav-desenler" },
+  { href: "/kategoriler", label: "Kategoriler", icon: FolderOpen, tourId: "nav-kategoriler" },
+  { href: "/blog", label: "Blog", icon: FileText, tourId: "nav-blog" },
+  { href: "/gorsel-olustur", label: "Gorsel Olustur", icon: Sparkles, tourId: "nav-gorsel" },
+  { href: "/tasarim-uretici", label: "Tasarim Uretici", icon: Wand2, tourId: "nav-tasarim" },
+  { href: "/instagram", label: "Instagram", icon: Instagram, tourId: "nav-instagram" },
+  { href: "/ayarlar", label: "Ayarlar", icon: Settings, tourId: "nav-ayarlar" },
 ];
 
 function Sidebar({
@@ -60,7 +66,7 @@ function Sidebar({
         )}
       >
         {/* Logo */}
-        <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-6">
+        <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-6" data-tour="sidebar-logo">
           <Link href="/" className="text-xl font-bold text-primary" onClick={onClose}>
             Elizim Admin
           </Link>
@@ -85,6 +91,7 @@ function Sidebar({
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
+                data-tour={item.tourId}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
@@ -100,7 +107,8 @@ function Sidebar({
         </nav>
 
         {/* Bottom */}
-        <div className="border-t border-sidebar-border p-4">
+        <div className="border-t border-sidebar-border p-4 space-y-2">
+          <TourHelpButton />
           <p className="text-xs text-muted-foreground">
             Elizim.art Admin v1.0
           </p>
@@ -125,6 +133,7 @@ function Header({ onMenuClick }: { onMenuClick: () => void }) {
       {/* Left: hamburger */}
       <button
         onClick={onMenuClick}
+        data-tour="mobile-menu"
         className="rounded-lg p-2 text-foreground hover:bg-muted lg:hidden"
       >
         <Menu className="size-5" />
@@ -183,6 +192,7 @@ export default function DashboardLayout({
             {children}
           </main>
         </div>
+        <TourProvider />
       </div>
     </QueryProvider>
   );

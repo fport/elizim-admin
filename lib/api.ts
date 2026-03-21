@@ -40,6 +40,7 @@ export interface BlogPost {
   tags: string | null;
   imageUrl: string | null;
   locale: string;
+  groupId: string | null;
   isPublished: boolean;
   publishedAt: string | null;
   createdAt: string;
@@ -221,6 +222,23 @@ export const blogApi = {
     });
     if (!res.ok) throw new Error("Blog yazısı silinemedi");
   },
+
+  async generate(
+    topic: string,
+    category?: string,
+    imageUrl?: string
+  ): Promise<BlogPost[]> {
+    const res = await fetchWithAuth("/api/blog/generate", {
+      method: "POST",
+      body: JSON.stringify({ topic, category, imageUrl }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Blog olusturulamadi");
+    }
+    const result = await res.json();
+    return result.posts;
+  },
 };
 
 // ── Upload API ──
@@ -307,6 +325,24 @@ export const aiApi = {
     return data.types;
   },
 
+  generateDesign: async (
+    prompt: string,
+    fileName: string,
+    title?: string
+  ): Promise<{ success: boolean; url: string; fileName: string; key: string; designId: string }> => {
+    const res = await fetch(`${API_URL}/api/ai/generate-design`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt, fileName, title }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Tasarim gorseli olusturulamadi");
+    }
+    return res.json();
+  },
+
   generateImage: async (
     imageFile: File,
     productType: string
@@ -325,5 +361,137 @@ export const aiApi = {
       throw new Error(err.error || "Görsel oluşturulamadı");
     }
     return res.json();
+  },
+};
+
+// ── Custom Designs ──
+
+export interface CustomDesign {
+  id: string;
+  title: string;
+  prompt: string;
+  imageUrl: string | null;
+  r2Key: string | null;
+  occasion: string | null;
+  clothing: string | null;
+  description: string | null;
+  price: number | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface PaginatedResponse<T> {
+  designs: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export const customDesignsApi = {
+  async getAll(page = 1, limit = 20): Promise<PaginatedResponse<CustomDesign>> {
+    const res = await fetchWithAuth(`/api/custom-designs/all?page=${page}&limit=${limit}`);
+    if (!res.ok) throw new Error("Tasarimlar yuklenemedi");
+    return res.json();
+  },
+
+  async create(data: Record<string, unknown>): Promise<CustomDesign> {
+    const res = await fetchWithAuth("/api/custom-designs", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Tasarim olusturulamadi");
+    }
+    const result = await res.json();
+    return result.design;
+  },
+
+  async update(id: string, data: Record<string, unknown>): Promise<CustomDesign> {
+    const res = await fetchWithAuth(`/api/custom-designs/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Tasarim guncellenemedi");
+    }
+    const result = await res.json();
+    return result.design;
+  },
+
+  async delete(id: string): Promise<void> {
+    const res = await fetchWithAuth(`/api/custom-designs/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Tasarim silinemedi");
+  },
+};
+
+// ── Patterns ──
+
+export interface Pattern {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  price: number;
+  categoryId: string | null;
+  tags: string | null;
+  previewImageUrl: string | null;
+  images: string | null;
+  formats: string;
+  difficulty: string | null;
+  stitchCount: number | null;
+  dimensions: string | null;
+  colorCount: number | null;
+  isActive: boolean;
+  downloadCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const patternsApi = {
+  async getAll(): Promise<Pattern[]> {
+    const res = await fetchWithAuth("/api/patterns");
+    if (!res.ok) throw new Error("Desenler yuklenemedi");
+    const data = await res.json();
+    return data.patterns;
+  },
+
+  async create(data: Record<string, unknown>): Promise<Pattern> {
+    const res = await fetchWithAuth("/api/patterns", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Desen eklenemedi");
+    }
+    const result = await res.json();
+    return result.pattern;
+  },
+
+  async update(id: string, data: Record<string, unknown>): Promise<Pattern> {
+    const res = await fetchWithAuth(`/api/patterns/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Desen guncellenemedi");
+    }
+    const result = await res.json();
+    return result.pattern;
+  },
+
+  async delete(id: string): Promise<void> {
+    const res = await fetchWithAuth(`/api/patterns/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Desen silinemedi");
   },
 };

@@ -127,7 +127,7 @@ export default function CategoriesPage() {
           </p>
         </div>
         {!showForm && (
-          <Button onClick={startCreate} className="gap-2">
+          <Button onClick={startCreate} className="gap-2" data-tour="kategori-add-btn">
             <Plus className="size-4" />
             Yeni Kategori
           </Button>
@@ -263,7 +263,7 @@ export default function CategoriesPage() {
           )}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <div className="overflow-x-auto rounded-xl border border-border" data-tour="kategori-table">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
@@ -282,7 +282,7 @@ export default function CategoriesPage() {
               </tr>
             </thead>
             <tbody>
-              {categories.map((cat) => (
+              {categories.map((cat, idx) => (
                 <tr
                   key={cat.id}
                   className="border-b border-border last:border-0 hover:bg-muted/30"
@@ -302,6 +302,7 @@ export default function CategoriesPage() {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => startEdit(cat)}
+                        {...(idx === 0 ? { "data-tour": "kategori-edit-btn" } : {})}
                       >
                         <Pencil className="size-4" />
                       </Button>
@@ -309,6 +310,7 @@ export default function CategoriesPage() {
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => setDeleteId(cat.id)}
+                        {...(idx === 0 ? { "data-tour": "kategori-delete-btn" } : {})}
                       >
                         <Trash2 className="size-4 text-destructive" />
                       </Button>

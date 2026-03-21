@@ -175,7 +175,7 @@ export default function GorselOlusturPage() {
         </div>
 
         {/* 1. Desen Yükle */}
-        <div>
+        <div data-tour="gorsel-upload">
           <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
             <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">1</span>
             Desenini Yükle
@@ -203,7 +203,7 @@ export default function GorselOlusturPage() {
         </div>
 
         {/* 2. Ürün Tipi */}
-        <div>
+        <div data-tour="gorsel-product-type">
           <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
             <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">2</span>
             Nereye Uygulansın?
@@ -238,7 +238,7 @@ export default function GorselOlusturPage() {
         </div>
 
         {/* 3. Boyut */}
-        <div>
+        <div data-tour="gorsel-aspect">
           <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
             <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">3</span>
             Boyut
@@ -284,6 +284,7 @@ export default function GorselOlusturPage() {
         <button
           onClick={handleGenerate}
           disabled={!canGenerate}
+          data-tour="gorsel-generate"
           className={cn(
             "flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all",
             "disabled:cursor-not-allowed disabled:opacity-40",
@@ -298,7 +299,7 @@ export default function GorselOlusturPage() {
       </div>
 
       {/* Sağ: Sonuç */}
-      <div className="flex flex-1 flex-col bg-muted/20 p-6">
+      <div className="flex flex-1 flex-col bg-muted/20 p-6" data-tour="gorsel-preview">
         {error && (
           <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-center dark:border-red-800 dark:bg-red-950">
             <p className="text-sm font-medium text-red-700 dark:text-red-300">{error}</p>

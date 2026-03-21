@@ -78,7 +78,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-tour="stats-grid">
         <StatCard
           title="Toplam Urun"
           value={products?.length ?? 0}
@@ -110,7 +110,7 @@ export default function DashboardPage() {
         <h2 className="mb-4 text-lg font-semibold text-foreground">
           Hizli Islemler
         </h2>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3" data-tour="quick-actions">
           <Link href="/urunler/yeni">
             <Button variant="outline" size="lg" className="gap-2">
               <Plus className="size-4" />

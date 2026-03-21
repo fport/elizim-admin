@@ -222,14 +222,14 @@ export default function PatternsPage() {
 
       {/* Form */}
       {showForm && (
-        <div className="rounded-xl border border-border bg-card p-6">
+        <div className="glass-card rounded-3xl p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">
               {editingPattern ? "Desen Duzenle" : "Yeni Desen"}
             </h2>
             <button
               onClick={resetForm}
-              className="rounded-lg p-1 hover:bg-muted"
+              className="rounded-xl p-1 hover:bg-muted"
             >
               <X className="size-5" />
             </button>
@@ -247,7 +247,7 @@ export default function PatternsPage() {
                     setForm((prev) => ({ ...prev, title: e.target.value }))
                   }
                   required
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full text-sm"
                   placeholder="Desen basligi"
                 />
               </div>
@@ -262,7 +262,7 @@ export default function PatternsPage() {
                     setForm((prev) => ({ ...prev, slug: e.target.value }))
                   }
                   required
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full text-sm"
                   placeholder="desen-slug"
                 />
               </div>
@@ -281,7 +281,7 @@ export default function PatternsPage() {
                     setForm((prev) => ({ ...prev, price: e.target.value }))
                   }
                   required
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full text-sm"
                   placeholder="0.00"
                 />
               </div>
@@ -296,7 +296,7 @@ export default function PatternsPage() {
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, difficulty: e.target.value }))
                   }
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full text-sm"
                 >
                   {DIFFICULTY_OPTIONS.map((d) => (
                     <option key={d} value={d}>
@@ -321,7 +321,7 @@ export default function PatternsPage() {
                       stitchCount: e.target.value,
                     }))
                   }
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="w-full text-sm"
                   placeholder="15000"
                 />
               </div>

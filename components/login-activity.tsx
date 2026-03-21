@@ -124,10 +124,10 @@ export function LoginActivity() {
 
   if (loading) {
     return (
-      <div className="glass-card rounded-xl p-6">
+      <div className="glass-card rounded-3xl p-6">
         <div className="flex items-center gap-3">
           <div className="size-5 animate-pulse rounded-full bg-muted" />
-          <div className="h-4 w-48 animate-pulse rounded bg-muted" />
+          <div className="h-4 w-48 animate-pulse rounded-xl bg-muted" />
         </div>
       </div>
     );
@@ -139,7 +139,7 @@ export function LoginActivity() {
     <div className="space-y-4">
       {/* Anomaly Warning */}
       {anomalous.length > 0 && !warningDismissed && (
-        <div className="relative overflow-hidden rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+        <div className="relative overflow-hidden rounded-3xl border border-amber-500/20 bg-amber-500/10 p-5">
           <div className="flex items-start gap-3">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-500/20">
               <AlertTriangle className="size-5 text-amber-500" />
@@ -169,7 +169,7 @@ export function LoginActivity() {
             </div>
             <button
               onClick={() => setWarningDismissed(true)}
-              className="shrink-0 rounded-lg p-1 text-amber-600 hover:bg-amber-500/20 dark:text-amber-400"
+              className="shrink-0 rounded-xl p-1.5 text-amber-600 hover:bg-amber-500/20 dark:text-amber-400"
             >
               <X className="size-4" />
             </button>

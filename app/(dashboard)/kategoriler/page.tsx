@@ -136,14 +136,14 @@ export default function CategoriesPage() {
 
       {/* Add/Edit Form */}
       {showForm && (
-        <div className="glass-card rounded-xl p-6">
+        <div className="glass-card rounded-3xl p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">
               {editingId ? "Kategoriyi Duzenle" : "Yeni Kategori"}
             </h2>
             <button
               onClick={resetForm}
-              className="rounded-lg p-1 text-muted-foreground hover:bg-muted"
+              className="rounded-xl p-1 text-muted-foreground hover:bg-muted"
             >
               <X className="size-5" />
             </button>
@@ -163,7 +163,7 @@ export default function CategoriesPage() {
                     if (!editingId) setSlug(slugify(e.target.value));
                   }}
                   placeholder="Kategori adi"
-                  className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                  className="h-10 w-full px-3 text-sm"
                 />
               </div>
               <div>
@@ -175,7 +175,7 @@ export default function CategoriesPage() {
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                   placeholder="kategori-slug"
-                  className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                  className="h-10 w-full px-3 text-sm"
                 />
               </div>
             </div>
@@ -189,7 +189,7 @@ export default function CategoriesPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Kategori aciklamasi"
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                className="h-10 w-full px-3 text-sm"
               />
             </div>
 
@@ -203,7 +203,7 @@ export default function CategoriesPage() {
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
                   placeholder="https://..."
-                  className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                  className="h-10 w-full px-3 text-sm"
                 />
               </div>
               <div>
@@ -215,13 +215,13 @@ export default function CategoriesPage() {
                   value={order}
                   onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
                   min={0}
-                  className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+                  className="h-10 w-full px-3 text-sm"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+              <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
                 {error}
               </div>
             )}
@@ -249,7 +249,7 @@ export default function CategoriesPage() {
           <Loader2 className="size-8 animate-spin text-primary" />
         </div>
       ) : !categories?.length ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-border py-20">
+        <div className="flex flex-col items-center justify-center glass-card rounded-3xl py-20">
           <p className="text-muted-foreground">Henuz kategori yok</p>
           {!showForm && (
             <Button

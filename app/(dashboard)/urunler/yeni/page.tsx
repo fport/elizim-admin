@@ -154,7 +154,7 @@ function NewProductForm() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title & Slug */}
-        <div className="glass-card rounded-xl p-6 space-y-4">
+        <div className="glass-card rounded-3xl p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">
             Temel Bilgiler
           </h2>
@@ -200,7 +200,7 @@ function NewProductForm() {
         </div>
 
         {/* Price & Category */}
-        <div className="glass-card rounded-xl p-6 space-y-4">
+        <div className="glass-card rounded-3xl p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">
             Fiyat ve Kategori
           </h2>
@@ -283,7 +283,7 @@ function NewProductForm() {
         </div>
 
         {/* Images */}
-        <div className="glass-card rounded-xl p-6 space-y-4">
+        <div className="glass-card rounded-3xl p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Gorseller</h2>
 
           {/* Upload */}
@@ -387,7 +387,7 @@ function NewProductForm() {
         </div>
 
         {/* Active Toggle */}
-        <div className="glass-card rounded-xl p-6">
+        <div className="glass-card rounded-3xl p-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-foreground">Durum</h2>

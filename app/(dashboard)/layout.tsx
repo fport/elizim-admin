@@ -61,25 +61,29 @@ function Sidebar({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-sidebar-border bg-sidebar transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto",
+          "fixed inset-y-0 left-0 z-50 flex w-[272px] flex-col bg-sidebar backdrop-blur-xl transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto",
+          "border-r border-sidebar-border/50",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Logo */}
-        <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-6" data-tour="sidebar-logo">
-          <Link href="/" className="text-xl font-bold text-primary" onClick={onClose}>
-            Elizim Admin
+        <div className="flex h-16 items-center justify-between px-6" data-tour="sidebar-logo">
+          <Link href="/" className="flex items-center gap-2.5 text-lg font-bold tracking-tight text-primary" onClick={onClose}>
+            <div className="flex size-8 items-center justify-center rounded-xl bg-primary/10">
+              <span className="text-sm">E</span>
+            </div>
+            Elizim
           </Link>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-sidebar-foreground hover:bg-sidebar-accent lg:hidden"
+            className="rounded-xl p-1.5 text-sidebar-foreground hover:bg-sidebar-accent lg:hidden"
           >
-            <X className="size-5" />
+            <X className="size-4" />
           </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 space-y-1 p-4">
+        <nav className="flex-1 space-y-0.5 px-3 pt-2">
           {navItems.map((item) => {
             const isActive =
               item.href === "/"
@@ -93,13 +97,13 @@ function Sidebar({
                 onClick={onClose}
                 data-tour={item.tourId}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-[13px] font-medium transition-all duration-200",
                   isActive
-                    ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
+                    ? "bg-primary/10 text-primary shadow-[inset_0_1px_1px_oklch(1_0_0/10%)]"
+                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                 )}
               >
-                <item.icon className="size-5 shrink-0" />
+                <item.icon className={cn("size-[18px] shrink-0", isActive && "text-primary")} />
                 {item.label}
               </Link>
             );
@@ -107,9 +111,9 @@ function Sidebar({
         </nav>
 
         {/* Bottom */}
-        <div className="border-t border-sidebar-border p-4 space-y-2">
+        <div className="p-3 space-y-2">
           <TourHelpButton />
-          <p className="text-xs text-muted-foreground">
+          <p className="px-3 text-[11px] text-muted-foreground/60">
             Elizim.art Admin v1.0
           </p>
         </div>
@@ -129,20 +133,20 @@ function Header({ onMenuClick }: { onMenuClick: () => void }) {
   }
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-sm lg:px-6">
+    <header className="flex h-14 items-center justify-between px-4 lg:px-6">
       {/* Left: hamburger */}
       <button
         onClick={onMenuClick}
         data-tour="mobile-menu"
-        className="rounded-lg p-2 text-foreground hover:bg-muted lg:hidden"
+        className="rounded-xl p-2 text-foreground hover:bg-muted/70 lg:hidden"
       >
         <Menu className="size-5" />
       </button>
 
       {/* Right side */}
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-1">
         {session?.user && (
-          <span className="hidden text-sm text-muted-foreground sm:inline">
+          <span className="mr-2 hidden rounded-full bg-muted/60 px-3 py-1.5 text-xs font-medium text-muted-foreground sm:inline">
             {session.user.name || session.user.email}
           </span>
         )}

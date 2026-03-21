@@ -45,10 +45,13 @@ function LoginForm() {
 
   return (
     <div className="w-full max-w-sm">
-      <div className="glass-card rounded-2xl p-8">
+      <div className="glass-card rounded-3xl p-8">
         <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary/10">
+            <span className="text-xl font-bold text-primary">E</span>
+          </div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Elizim Admin Giris
+            Elizim Admin
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Yonetim paneline giris yapin
@@ -71,7 +74,7 @@ function LoginForm() {
               placeholder="admin@elizim.art"
               required
               autoComplete="email"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full text-sm"
             />
           </div>
 
@@ -90,12 +93,12 @@ function LoginForm() {
               placeholder="********"
               required
               autoComplete="current-password"
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              className="h-10 w-full text-sm"
             />
           </div>
 
           {error && (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+            <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
               {error}
             </div>
           )}
@@ -113,7 +116,7 @@ function LoginForm() {
         </form>
       </div>
 
-      <p className="mt-6 text-center text-xs text-muted-foreground">
+      <p className="mt-6 text-center text-xs text-muted-foreground/60">
         Elizim.art Yonetim Paneli
       </p>
     </div>

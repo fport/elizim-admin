@@ -68,7 +68,7 @@ export default function ProductsPage() {
           <Loader2 className="size-8 animate-spin text-primary" />
         </div>
       ) : !products?.length ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-border py-20">
+        <div className="flex flex-col items-center justify-center glass-card rounded-3xl py-20">
           <p className="text-muted-foreground">Henuz urun yok</p>
           <Link href="/urunler/yeni" className="mt-4">
             <Button variant="outline" className="gap-2">
@@ -78,10 +78,10 @@ export default function ProductsPage() {
           </Link>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border" data-tour="urun-table">
+        <div className="overflow-x-auto glass-card rounded-3xl overflow-hidden" data-tour="urun-table">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/50">
+              <tr className="border-b border-border/50 bg-muted/30">
                 <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                   Gorsel
                 </th>
@@ -106,7 +106,7 @@ export default function ProductsPage() {
               {products.map((product, idx) => (
                 <tr
                   key={product.id}
-                  className="border-b border-border last:border-0 hover:bg-muted/30"
+                  className="border-b border-border/50 last:border-0 hover:bg-muted/20"
                 >
                   <td className="px-4 py-3">
                     {product.thumbnailUrl ? (
@@ -115,10 +115,10 @@ export default function ProductsPage() {
                         alt={product.title}
                         width={48}
                         height={48}
-                        className="size-12 rounded-lg object-cover"
+                        className="size-12 rounded-2xl object-cover"
                       />
                     ) : (
-                      <div className="flex size-12 items-center justify-center rounded-lg bg-muted text-xs text-muted-foreground">
+                      <div className="flex size-12 items-center justify-center rounded-2xl bg-muted text-xs text-muted-foreground">
                         Yok
                       </div>
                     )}
@@ -139,7 +139,7 @@ export default function ProductsPage() {
                   </td>
                   <td className="hidden px-4 py-3 sm:table-cell">
                     <span
-                      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                      className={`inline-flex rounded-full backdrop-blur-sm px-2 py-0.5 text-xs font-medium ${
                         product.isActive
                           ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                           : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
@@ -174,8 +174,8 @@ export default function ProductsPage() {
 
       {/* Delete Confirmation Dialog */}
       {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="mx-4 w-full max-w-sm rounded-xl border border-border bg-background p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md">
+          <div className="mx-4 w-full max-w-sm glass-modal rounded-3xl p-6">
             <h3 className="text-lg font-semibold text-foreground">
               Urunu Sil
             </h3>

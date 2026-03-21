@@ -1,64 +1,91 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, use } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Upload, X, Loader2, Check, Link2 } from "lucide-react";
 import Link from "next/link";
-import { productsApi, categoriesApi, uploadApi } from "@/lib/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Upload, Loader2, Link2 } from "lucide-react";
+import { patternsApi, uploadApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 
-function slugify(text: string): string {
-  return text
+function generateSlug(title: string): string {
+  return title
     .toLowerCase()
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ı/g, "i")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .trim();
 }
 
-function NewProductForm() {
+const AVAILABLE_FORMATS = ["DST", "VP3", "EXP"];
+const DIFFICULTY_OPTIONS = ["Kolay", "Orta", "Zor"];
+
+export default function EditPatternPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
 
-  // Pre-fill from Instagram import
-  const prefillTitle = searchParams.get("title") || "";
-  const prefillDescription = searchParams.get("description") || "";
-  const prefillImages = searchParams.get("images") || "";
-  const prefillThumbnail = searchParams.get("thumbnailUrl") || "";
-  const prefillInstagramId = searchParams.get("instagramPostId") || "";
-
-  const initialImages = prefillImages
-    ? prefillImages.split(",").filter(Boolean)
-    : [];
-
-  const [title, setTitle] = useState(prefillTitle);
-  const [slug, setSlug] = useState(slugify(prefillTitle));
-  const [description, setDescription] = useState(prefillDescription);
+  const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
+  const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [tags, setTags] = useState("");
-  const [deliveryTime, setDeliveryTime] = useState("");
-  const [whatsappText, setWhatsappText] = useState("");
-  const [images, setImages] = useState<string[]>(initialImages);
-  const [thumbnailUrl, setThumbnailUrl] = useState(prefillThumbnail);
+  const [previewImageUrl, setPreviewImageUrl] = useState("");
+  const [formats, setFormats] = useState<string[]>(["DST", "VP3", "EXP"]);
+  const [difficulty, setDifficulty] = useState("Orta");
+  const [stitchCount, setStitchCount] = useState("");
+  const [dimensions, setDimensions] = useState("");
+  const [colorCount, setColorCount] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrlInput, setImageUrlInput] = useState("");
   const [error, setError] = useState("");
+  const [loaded, setLoaded] = useState(false);
 
-  const { data: categories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: categoriesApi.getAll,
+  const { data: patterns } = useQuery({
+    queryKey: ["patterns"],
+    queryFn: patternsApi.getAll,
   });
 
-  const createMutation = useMutation({
-    mutationFn: productsApi.create,
+  const pattern = patterns?.find((p) => p.id === id);
+
+  useEffect(() => {
+    if (pattern && !loaded) {
+      setTitle(pattern.title);
+      setSlug(pattern.slug);
+      setDescription(pattern.description || "");
+      setPrice((pattern.price / 100).toFixed(2));
+      setCategoryId(pattern.categoryId || "");
+      setTags(pattern.tags || "");
+      setPreviewImageUrl(pattern.previewImageUrl || "");
+      setFormats(pattern.formats.split(",").map((f) => f.trim()));
+      setDifficulty(pattern.difficulty || "Orta");
+      setStitchCount(pattern.stitchCount ? String(pattern.stitchCount) : "");
+      setDimensions(pattern.dimensions || "");
+      setColorCount(pattern.colorCount ? String(pattern.colorCount) : "");
+      setIsActive(pattern.isActive);
+      setLoaded(true);
+    }
+  }, [pattern, loaded]);
+
+  const updateMutation = useMutation({
+    mutationFn: (data: Record<string, unknown>) =>
+      patternsApi.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      router.push("/urunler");
+      queryClient.invalidateQueries({ queryKey: ["patterns"] });
+      router.push("/desenler");
     },
     onError: (err: Error) => {
       setError(err.message);
@@ -67,40 +94,28 @@ function NewProductForm() {
 
   function handleTitleChange(value: string) {
     setTitle(value);
-    setSlug(slugify(value));
+    setSlug(generateSlug(value));
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files;
-    if (!files?.length) return;
-
+    const file = e.target.files?.[0];
+    if (!file) return;
     setUploading(true);
     setError("");
-
     try {
-      const uploadPromises = Array.from(files).map((file) =>
-        uploadApi.uploadImage(file)
-      );
-      const urls = await Promise.all(uploadPromises);
-      const newImages = [...images, ...urls];
-      setImages(newImages);
-
-      if (!thumbnailUrl && newImages.length > 0) {
-        setThumbnailUrl(newImages[0]);
-      }
+      const url = await uploadApi.uploadImage(file);
+      setPreviewImageUrl(url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Resim yuklenemedi");
+      setError(err instanceof Error ? err.message : "Gorsel yuklenemedi");
     } finally {
       setUploading(false);
     }
   }
 
-  function removeImage(index: number) {
-    const newImages = images.filter((_, i) => i !== index);
-    setImages(newImages);
-    if (thumbnailUrl === images[index]) {
-      setThumbnailUrl(newImages[0] || "");
-    }
+  function toggleFormat(fmt: string) {
+    setFormats((prev) =>
+      prev.includes(fmt) ? prev.filter((f) => f !== fmt) : [...prev, fmt]
+    );
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -118,36 +133,54 @@ function NewProductForm() {
       return;
     }
 
-    createMutation.mutate({
+    updateMutation.mutate({
       title: title.trim(),
       slug: slug.trim(),
       description: description.trim() || null,
       price: priceKurus,
       categoryId: categoryId || null,
       tags: tags.trim() || null,
-      deliveryTime: deliveryTime.trim() || null,
-      whatsappText: whatsappText.trim() || null,
-      images: images.length > 0 ? JSON.stringify(images) : null,
-      thumbnailUrl: thumbnailUrl || null,
-      instagramPostId: prefillInstagramId || null,
+      previewImageUrl: previewImageUrl || null,
+      formats: formats.join(","),
+      difficulty: difficulty || null,
+      stitchCount: stitchCount ? parseInt(stitchCount) : null,
+      dimensions: dimensions.trim() || null,
+      colorCount: colorCount ? parseInt(colorCount) : null,
       isActive,
     });
+  }
+
+  if (!pattern && patterns) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <p className="text-lg font-semibold text-foreground">Desen bulunamadi</p>
+        <Link href="/desenler" className="mt-4">
+          <Button variant="outline">Desenlere Don</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  if (!loaded) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="size-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href="/urunler">
+        <Link href="/desenler">
           <Button variant="ghost" size="icon">
             <ArrowLeft className="size-5" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Yeni Urun</h1>
-          <p className="text-sm text-muted-foreground">
-            Yeni bir urun olusturun
-          </p>
+          <h1 className="text-2xl font-bold text-foreground">Desen Duzenle</h1>
+          <p className="text-sm text-muted-foreground">{pattern?.title}</p>
         </div>
       </div>
 
@@ -155,9 +188,7 @@ function NewProductForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title & Slug */}
         <div className="glass-card rounded-xl p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">
-            Temel Bilgiler
-          </h2>
+          <h2 className="text-lg font-semibold text-foreground">Temel Bilgiler</h2>
 
           <div>
             <label className="mb-1.5 block text-sm font-medium text-foreground">
@@ -167,7 +198,7 @@ function NewProductForm() {
               type="text"
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
-              placeholder="Urun basligi"
+              placeholder="Desen basligi"
               className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
             />
           </div>
@@ -180,7 +211,7 @@ function NewProductForm() {
               type="text"
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
-              placeholder="urun-slug"
+              placeholder="desen-slug"
               className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
             />
           </div>
@@ -192,18 +223,16 @@ function NewProductForm() {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Urun aciklamasi"
+              placeholder="Desen aciklamasi"
               rows={4}
               className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20 resize-none"
             />
           </div>
         </div>
 
-        {/* Price & Category */}
+        {/* Price & Details */}
         <div className="glass-card rounded-xl p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">
-            Fiyat ve Kategori
-          </h2>
+          <h2 className="text-lg font-semibold text-foreground">Fiyat ve Detaylar</h2>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
@@ -216,27 +245,69 @@ function NewProductForm() {
                 min="0"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                placeholder="150.00"
+                placeholder="0.00"
                 className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
               />
             </div>
 
             <div>
               <label className="mb-1.5 block text-sm font-medium text-foreground">
-                Kategori
+                Zorluk
               </label>
               <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
+                value={difficulty}
+                onChange={(e) => setDifficulty(e.target.value)}
                 className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
               >
-                <option value="">Kategori secin</option>
-                {categories?.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
+                {DIFFICULTY_OPTIONS.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-foreground">
+                Dikis Sayisi
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={stitchCount}
+                onChange={(e) => setStitchCount(e.target.value)}
+                placeholder="15000"
+                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-foreground">
+                Boyutlar
+              </label>
+              <input
+                type="text"
+                value={dimensions}
+                onChange={(e) => setDimensions(e.target.value)}
+                placeholder="10x15 cm"
+                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-foreground">
+                Renk Sayisi
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={colorCount}
+                onChange={(e) => setColorCount(e.target.value)}
+                placeholder="5"
+                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              />
             </div>
           </div>
 
@@ -248,52 +319,42 @@ function NewProductForm() {
               type="text"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-              placeholder="el islemesi, masa ortusu, dantel"
+              placeholder="cicek, yaprak, geometrik"
               className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
             />
           </div>
+        </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-foreground">
-                Teslimat Suresi
+        {/* Formats */}
+        <div className="glass-card rounded-xl p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">Formatlar</h2>
+          <div className="flex gap-3">
+            {AVAILABLE_FORMATS.map((fmt) => (
+              <label
+                key={fmt}
+                className="flex cursor-pointer items-center gap-2"
+              >
+                <input
+                  type="checkbox"
+                  checked={formats.includes(fmt)}
+                  onChange={() => toggleFormat(fmt)}
+                  className="size-4 rounded border-border text-primary focus:ring-primary/20"
+                />
+                <span className="text-sm font-medium">{fmt}</span>
               </label>
-              <input
-                type="text"
-                value={deliveryTime}
-                onChange={(e) => setDeliveryTime(e.target.value)}
-                placeholder="3-5 is gunu"
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-foreground">
-                WhatsApp Metni
-              </label>
-              <input
-                type="text"
-                value={whatsappText}
-                onChange={(e) => setWhatsappText(e.target.value)}
-                placeholder="Bu urun hakkinda bilgi almak istiyorum"
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
-              />
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Images */}
+        {/* Preview Image */}
         <div className="glass-card rounded-xl p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Gorseller</h2>
+          <h2 className="text-lg font-semibold text-foreground">Onizleme Gorseli</h2>
 
-          {/* Upload */}
           <div>
             <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-6 transition-colors hover:border-primary/50 hover:bg-muted/30">
               <Upload className="mb-2 size-8 text-muted-foreground" />
               <span className="text-sm font-medium text-muted-foreground">
-                {uploading
-                  ? "Yukleniyor..."
-                  : "Gorsel yuklemek icin tiklayin"}
+                {uploading ? "Yukleniyor..." : "Gorsel yuklemek icin tiklayin"}
               </span>
               <span className="mt-1 text-xs text-muted-foreground">
                 PNG, JPG, WebP (max 10MB)
@@ -301,7 +362,6 @@ function NewProductForm() {
               <input
                 type="file"
                 accept="image/*"
-                multiple
                 onChange={handleImageUpload}
                 className="hidden"
                 disabled={uploading}
@@ -315,8 +375,8 @@ function NewProductForm() {
               <Link2 className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
+                value={imageUrlInput}
+                onChange={(e) => setImageUrlInput(e.target.value)}
                 placeholder="veya gorsel URL'si yapistiriniz"
                 className="h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
               />
@@ -324,14 +384,12 @@ function NewProductForm() {
             <Button
               type="button"
               variant="outline"
-              disabled={!imageUrl.trim()}
+              disabled={!imageUrlInput.trim()}
               onClick={() => {
-                const url = imageUrl.trim();
+                const url = imageUrlInput.trim();
                 if (url) {
-                  const newImages = [...images, url];
-                  setImages(newImages);
-                  if (!thumbnailUrl) setThumbnailUrl(url);
-                  setImageUrl("");
+                  setPreviewImageUrl(url);
+                  setImageUrlInput("");
                 }
               }}
             >
@@ -339,49 +397,15 @@ function NewProductForm() {
             </Button>
           </div>
 
-          {/* Image Grid */}
-          {images.length > 0 && (
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-              {images.map((url, index) => (
-                <div
-                  key={index}
-                  className="group relative aspect-square overflow-hidden rounded-lg border border-border"
-                >
-                  <Image
-                    src={url}
-                    alt={`Gorsel ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-
-                  {/* Thumbnail badge */}
-                  {thumbnailUrl === url && (
-                    <div className="absolute left-1 top-1 rounded bg-primary px-1.5 py-0.5 text-[10px] font-medium text-primary-foreground">
-                      Kapak
-                    </div>
-                  )}
-
-                  {/* Actions overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center gap-1 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-                    <button
-                      type="button"
-                      onClick={() => setThumbnailUrl(url)}
-                      className="rounded-lg bg-white/90 p-1.5 text-black hover:bg-white"
-                      title="Kapak gorseli yap"
-                    >
-                      <Check className="size-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="rounded-lg bg-white/90 p-1.5 text-red-600 hover:bg-white"
-                      title="Gorseli kaldir"
-                    >
-                      <X className="size-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+          {previewImageUrl && (
+            <div className="flex items-center gap-4">
+              <Image
+                src={previewImageUrl}
+                alt="Preview"
+                width={120}
+                height={120}
+                className="size-30 rounded-lg border border-border object-cover"
+              />
             </div>
           )}
         </div>
@@ -392,7 +416,7 @@ function NewProductForm() {
             <div>
               <h2 className="text-lg font-semibold text-foreground">Durum</h2>
               <p className="text-sm text-muted-foreground">
-                Urunun sitede gorunurlugu
+                Desenin sitede gorunurlugu
               </p>
             </div>
             <button
@@ -420,41 +444,27 @@ function NewProductForm() {
 
         {/* Submit */}
         <div className="flex justify-end gap-3">
-          <Link href="/urunler">
+          <Link href="/desenler">
             <Button type="button" variant="outline">
               Iptal
             </Button>
           </Link>
           <Button
             type="submit"
-            disabled={createMutation.isPending}
+            disabled={updateMutation.isPending}
             className="min-w-[120px]"
           >
-            {createMutation.isPending ? (
+            {updateMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />
                 Kaydediliyor...
               </>
             ) : (
-              "Urunu Kaydet"
+              "Degisiklikleri Kaydet"
             )}
           </Button>
         </div>
       </form>
     </div>
-  );
-}
-
-export default function NewProductPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="size-8 animate-spin text-primary" />
-        </div>
-      }
-    >
-      <NewProductForm />
-    </Suspense>
   );
 }

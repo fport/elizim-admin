@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import {
   Plus,
   Pencil,
@@ -10,6 +11,7 @@ import {
   Loader2,
   X,
   Upload,
+  Link2,
 } from "lucide-react";
 import { patternsApi, uploadApi } from "@/lib/api";
 import type { Pattern } from "@/lib/api";
@@ -80,6 +82,7 @@ export default function PatternsPage() {
   const [editingPattern, setEditingPattern] = useState<Pattern | null>(null);
   const [form, setForm] = useState<PatternFormData>(emptyForm);
   const [uploading, setUploading] = useState(false);
+  const [imageUrlInput, setImageUrlInput] = useState("");
 
   const { data: patterns, isLoading } = useQuery({
     queryKey: ["patterns"],
@@ -115,6 +118,7 @@ export default function PatternsPage() {
     setForm(emptyForm);
     setShowForm(false);
     setEditingPattern(null);
+    setImageUrlInput("");
   }
 
   function openCreate() {
@@ -447,6 +451,33 @@ export default function PatternsPage() {
                   />
                 </label>
               </div>
+              <div className="mt-2 flex gap-2">
+                <div className="relative flex-1">
+                  <Link2 className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="url"
+                    value={imageUrlInput}
+                    onChange={(e) => setImageUrlInput(e.target.value)}
+                    placeholder="veya gorsel URL'si yapistiriniz"
+                    className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={!imageUrlInput.trim()}
+                  onClick={() => {
+                    const url = imageUrlInput.trim();
+                    if (url) {
+                      setForm((prev) => ({ ...prev, previewImageUrl: url }));
+                      setImageUrlInput("");
+                    }
+                  }}
+                >
+                  Ekle
+                </Button>
+              </div>
             </div>
 
             {/* Active toggle */}
@@ -598,14 +629,11 @@ export default function PatternsPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={() => openEdit(pattern)}
-                        {...(idx === 0 ? { "data-tour": "desen-edit-btn" } : {})}
-                      >
-                        <Pencil className="size-4" />
-                      </Button>
+                      <Link href={`/desenler/${pattern.id}/duzenle`} {...(idx === 0 ? { "data-tour": "desen-edit-btn" } : {})}>
+                        <Button variant="ghost" size="icon-sm">
+                          <Pencil className="size-4" />
+                        </Button>
+                      </Link>
                       <Button
                         variant="ghost"
                         size="icon-sm"

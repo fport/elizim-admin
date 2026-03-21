@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Upload, X, Loader2, Check } from "lucide-react";
+import { ArrowLeft, Upload, X, Loader2, Check, Link2 } from "lucide-react";
 import { productsApi, categoriesApi, uploadApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 
@@ -39,6 +39,7 @@ export default function EditProductPage({
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
   const [error, setError] = useState("");
   const [loaded, setLoaded] = useState(false);
 
@@ -343,6 +344,36 @@ export default function EditProductPage({
                 disabled={uploading}
               />
             </label>
+          </div>
+
+          {/* URL Input */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Link2 className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="url"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="veya gorsel URL'si yapistiriniz"
+                className="h-10 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20"
+              />
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={!imageUrl.trim()}
+              onClick={() => {
+                const url = imageUrl.trim();
+                if (url) {
+                  const newImages = [...images, url];
+                  setImages(newImages);
+                  if (!thumbnailUrl) setThumbnailUrl(url);
+                  setImageUrl("");
+                }
+              }}
+            >
+              Ekle
+            </Button>
           </div>
 
           {images.length > 0 && (

@@ -431,6 +431,45 @@ export const customDesignsApi = {
   },
 };
 
+// ── IP Geolocation ──
+
+export interface GeoLocation {
+  ip: string;
+  city: string;
+  region: string;
+  country: string;
+  lat: number;
+  lon: number;
+}
+
+const geoCache = new Map<string, GeoLocation>();
+
+export async function getIpLocation(ip: string): Promise<GeoLocation | null> {
+  if (!ip || ip === "127.0.0.1" || ip === "::1" || ip === "localhost") {
+    return { ip, city: "Yerel", region: "", country: "", lat: 0, lon: 0 };
+  }
+
+  if (geoCache.has(ip)) return geoCache.get(ip)!;
+
+  try {
+    const res = await fetch(`http://ip-api.com/json/${ip}?fields=query,city,regionName,country,lat,lon`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const geo: GeoLocation = {
+      ip: data.query,
+      city: data.city || "Bilinmiyor",
+      region: data.regionName || "",
+      country: data.country || "",
+      lat: data.lat || 0,
+      lon: data.lon || 0,
+    };
+    geoCache.set(ip, geo);
+    return geo;
+  } catch {
+    return null;
+  }
+}
+
 // ── Patterns ──
 
 export interface Pattern {

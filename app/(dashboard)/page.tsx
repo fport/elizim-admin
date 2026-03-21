@@ -13,6 +13,7 @@ import {
 import { useSession } from "@/lib/auth-client";
 import { productsApi, categoriesApi, blogApi, instagramApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { LoginActivity } from "@/components/login-activity";
 
 function StatCard({
   title,
@@ -131,6 +132,9 @@ export default function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* Login Activity */}
+      <LoginActivity />
     </div>
   );
 }

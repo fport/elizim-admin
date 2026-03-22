@@ -2,10 +2,16 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Loader2, X, Save } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, X, Save, Globe } from "lucide-react";
 import { categoriesApi } from "@/lib/api";
-import type { Category } from "@/lib/api";
+import type { Category, CategoryTranslation } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+
+const LOCALES = [
+  { code: "tr", label: "Turkce", flag: "🇹🇷" },
+  { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "ar", label: "العربية", flag: "🇸🇦" },
+] as const;
 
 function slugify(text: string): string {
   return text
@@ -31,6 +37,11 @@ export default function CategoriesPage() {
   const [order, setOrder] = useState(0);
   const [error, setError] = useState("");
 
+  // Translation state
+  const [activeLocale, setActiveLocale] = useState("tr");
+  const [translationNames, setTranslationNames] = useState<Record<string, string>>({ en: "", ar: "" });
+  const [translationDescs, setTranslationDescs] = useState<Record<string, string>>({ en: "", ar: "" });
+
   const { data: categories, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: categoriesApi.getAll,
@@ -46,7 +57,7 @@ export default function CategoriesPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Category> }) =>
+    mutationFn: ({ id, data }: { id: string; data: Parameters<typeof categoriesApi.update>[1] }) =>
       categoriesApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -72,9 +83,12 @@ export default function CategoriesPage() {
     setImageUrl("");
     setOrder(0);
     setError("");
+    setActiveLocale("tr");
+    setTranslationNames({ en: "", ar: "" });
+    setTranslationDescs({ en: "", ar: "" });
   }
 
-  function startEdit(cat: Category) {
+  async function startEdit(cat: Category) {
     setEditingId(cat.id);
     setName(cat.name);
     setSlug(cat.slug);
@@ -82,7 +96,25 @@ export default function CategoriesPage() {
     setImageUrl(cat.imageUrl || "");
     setOrder(cat.order);
     setShowForm(true);
+    setActiveLocale("tr");
     setError("");
+
+    // Load translations
+    try {
+      const translations = await categoriesApi.getTranslations(cat.id);
+      const names: Record<string, string> = { en: "", ar: "" };
+      const descs: Record<string, string> = { en: "", ar: "" };
+      for (const tr of translations) {
+        if (tr.locale === "en" || tr.locale === "ar") {
+          names[tr.locale] = tr.name;
+          descs[tr.locale] = tr.description || "";
+        }
+      }
+      setTranslationNames(names);
+      setTranslationDescs(descs);
+    } catch {
+      // Translations may not exist yet
+    }
   }
 
   function startCreate() {
@@ -99,12 +131,24 @@ export default function CategoriesPage() {
       return;
     }
 
+    const translations: { locale: string; name: string; description: string | null }[] = [];
+    for (const loc of ["en", "ar"] as const) {
+      if (translationNames[loc]?.trim()) {
+        translations.push({
+          locale: loc,
+          name: translationNames[loc].trim(),
+          description: translationDescs[loc]?.trim() || null,
+        });
+      }
+    }
+
     const data = {
       name: name.trim(),
       slug: slug.trim() || slugify(name),
       description: description.trim() || null,
       imageUrl: imageUrl.trim() || null,
       order,
+      translations,
     };
 
     if (editingId) {
@@ -150,75 +194,150 @@ export default function CategoriesPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-foreground">
-                  Ad *
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value);
-                    if (!editingId) setSlug(slugify(e.target.value));
-                  }}
-                  placeholder="Kategori adi"
-                  className="h-10 w-full px-3 text-sm"
-                />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-foreground">
-                  Slug
-                </label>
-                <input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  placeholder="kategori-slug"
-                  className="h-10 w-full px-3 text-sm"
-                />
+            {/* Language Tabs */}
+            <div className="flex items-center gap-1 rounded-2xl bg-muted/50 p-1">
+              {LOCALES.map((loc) => (
+                <button
+                  key={loc.code}
+                  type="button"
+                  onClick={() => setActiveLocale(loc.code)}
+                  className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium transition-colors ${
+                    activeLocale === loc.code
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <span>{loc.flag}</span>
+                  <span>{loc.label}</span>
+                </button>
+              ))}
+              <div className="ml-auto flex items-center gap-1 text-xs text-muted-foreground">
+                <Globe className="size-3.5" />
+                Coklu dil
               </div>
             </div>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-foreground">
-                Aciklama
-              </label>
-              <input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Kategori aciklamasi"
-                className="h-10 w-full px-3 text-sm"
-              />
-            </div>
+            {/* TR fields (main) */}
+            {activeLocale === "tr" && (
+              <>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-foreground">
+                      Ad * <span className="text-xs text-muted-foreground">(Turkce)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (!editingId) setSlug(slugify(e.target.value));
+                      }}
+                      placeholder="Kategori adi"
+                      className="h-10 w-full px-3 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-foreground">
+                      Slug
+                    </label>
+                    <input
+                      type="text"
+                      value={slug}
+                      onChange={(e) => setSlug(e.target.value)}
+                      placeholder="kategori-slug"
+                      className="h-10 w-full px-3 text-sm"
+                    />
+                  </div>
+                </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-foreground">
-                  Gorsel URL
-                </label>
-                <input
-                  type="text"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="h-10 w-full px-3 text-sm"
-                />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-foreground">
-                  Sira
-                </label>
-                <input
-                  type="number"
-                  value={order}
-                  onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
-                  min={0}
-                  className="h-10 w-full px-3 text-sm"
-                />
-              </div>
-            </div>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
+                    Aciklama <span className="text-xs text-muted-foreground">(Turkce)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Kategori aciklamasi"
+                    className="h-10 w-full px-3 text-sm"
+                  />
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-foreground">
+                      Gorsel URL
+                    </label>
+                    <input
+                      type="text"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="https://..."
+                      className="h-10 w-full px-3 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-foreground">
+                      Sira
+                    </label>
+                    <input
+                      type="number"
+                      value={order}
+                      onChange={(e) => setOrder(parseInt(e.target.value) || 0)}
+                      min={0}
+                      className="h-10 w-full px-3 text-sm"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* EN / AR fields */}
+            {activeLocale !== "tr" && (
+              <>
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
+                    Ad * <span className="text-xs text-muted-foreground">
+                      ({LOCALES.find((l) => l.code === activeLocale)?.label})
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={translationNames[activeLocale] || ""}
+                    onChange={(e) =>
+                      setTranslationNames((prev) => ({ ...prev, [activeLocale]: e.target.value }))
+                    }
+                    placeholder={`Kategori adi (${LOCALES.find((l) => l.code === activeLocale)?.label})`}
+                    className="h-10 w-full px-3 text-sm"
+                    dir={activeLocale === "ar" ? "rtl" : "ltr"}
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-foreground">
+                    Aciklama <span className="text-xs text-muted-foreground">
+                      ({LOCALES.find((l) => l.code === activeLocale)?.label})
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    value={translationDescs[activeLocale] || ""}
+                    onChange={(e) =>
+                      setTranslationDescs((prev) => ({ ...prev, [activeLocale]: e.target.value }))
+                    }
+                    placeholder={`Kategori aciklamasi (${LOCALES.find((l) => l.code === activeLocale)?.label})`}
+                    className="h-10 w-full px-3 text-sm"
+                    dir={activeLocale === "ar" ? "rtl" : "ltr"}
+                  />
+                </div>
+
+                {!name.trim() && (
+                  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-600 dark:text-amber-400">
+                    Once Turkce sekmesinden kategori adini girin.
+                  </div>
+                )}
+              </>
+            )}
 
             {error && (
               <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">

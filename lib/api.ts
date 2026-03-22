@@ -20,6 +20,14 @@ export interface Product {
   updatedAt: string;
 }
 
+export interface CategoryTranslation {
+  id: string;
+  categoryId: string;
+  locale: string;
+  name: string;
+  description: string | null;
+}
+
 export interface Category {
   id: string;
   name: string;
@@ -28,6 +36,7 @@ export interface Category {
   imageUrl: string | null;
   order: number;
   createdAt: string;
+  translations?: CategoryTranslation[];
 }
 
 export interface BlogPost {
@@ -142,8 +151,17 @@ export const categoriesApi = {
     return data.categories;
   },
 
+  async getTranslations(id: string): Promise<CategoryTranslation[]> {
+    const res = await fetchWithAuth(`/api/categories/${id}/translations`);
+    if (!res.ok) throw new Error("Çeviriler yüklenemedi");
+    const data = await res.json();
+    return data.translations;
+  },
+
   async create(
-    data: Omit<Category, "id" | "createdAt">
+    data: Omit<Category, "id" | "createdAt" | "translations"> & {
+      translations?: { locale: string; name: string; description?: string | null }[];
+    }
   ): Promise<Category> {
     const res = await fetchWithAuth("/api/categories", {
       method: "POST",
@@ -157,7 +175,12 @@ export const categoriesApi = {
     return result.category;
   },
 
-  async update(id: string, data: Partial<Category>): Promise<Category> {
+  async update(
+    id: string,
+    data: Partial<Category> & {
+      translations?: { locale: string; name: string; description?: string | null }[];
+    }
+  ): Promise<Category> {
     const res = await fetchWithAuth(`/api/categories/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),

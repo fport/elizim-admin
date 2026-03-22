@@ -177,7 +177,7 @@ export const categoriesApi = {
 
   async update(
     id: string,
-    data: Partial<Category> & {
+    data: Omit<Partial<Category>, "translations"> & {
       translations?: { locale: string; name: string; description?: string | null }[];
     }
   ): Promise<Category> {

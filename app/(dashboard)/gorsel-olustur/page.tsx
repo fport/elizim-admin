@@ -22,6 +22,7 @@ import {
   ImageIcon,
   Wand2,
   Send,
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { aiApi, generatedImagesApi, type GeneratedImage } from "@/lib/api";
@@ -42,13 +43,16 @@ const PRODUCT_TYPES = [
 ];
 
 const ASPECT_RATIOS = [
-  { key: "post", label: "Post (1:1)", icon: Square },
-  { key: "story", label: "Story (9:16)", icon: RectangleVertical },
-  { key: "product", label: "Ürün (4:3)", icon: RectangleHorizontal },
-  { key: "wide", label: "Banner (16:9)", icon: Monitor },
+  { key: "post", label: "1:1", icon: Square },
+  { key: "story", label: "9:16", icon: RectangleVertical },
+  { key: "product", label: "4:3", icon: RectangleHorizontal },
+  { key: "wide", label: "16:9", icon: Monitor },
 ];
 
+type Tab = "create" | "history";
+
 export default function GorselOlusturPage() {
+  const [tab, setTab] = useState<Tab>("create");
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
   const [customProduct, setCustomProduct] = useState("");
   const [selectedRatio, setSelectedRatio] = useState("post");
@@ -64,7 +68,9 @@ export default function GorselOlusturPage() {
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   // Revision
   const [revisionInstructions, setRevisionInstructions] = useState("");
@@ -80,7 +86,7 @@ export default function GorselOlusturPage() {
   async function fetchHistory(p = historyPage) {
     setHistoryLoading(true);
     try {
-      const data = await generatedImagesApi.getAll(p, 8);
+      const data = await generatedImagesApi.getAll(p, 12);
       setHistory(data.images);
       setHistoryTotalPages(data.pagination.totalPages);
       setHistoryTotal(data.pagination.total);
@@ -147,6 +153,12 @@ export default function GorselOlusturPage() {
 
       setResult(await res.json());
       fetchHistory(1);
+      // Auto scroll to result + toast
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Bir hata oluştu");
     } finally {
@@ -154,9 +166,8 @@ export default function GorselOlusturPage() {
     }
   }
 
-  async function handleCopyUrl() {
-    if (!result?.url) return;
-    await navigator.clipboard.writeText(result.url);
+  async function handleCopyUrl(url: string) {
+    await navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -180,6 +191,11 @@ export default function GorselOlusturPage() {
       });
       setRevisionInstructions("");
       fetchHistory(1);
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Revizyon yapilamadi");
     } finally {
@@ -207,29 +223,29 @@ export default function GorselOlusturPage() {
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/95 backdrop-blur-sm">
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
-            <div className="size-24 rounded-full border-4 border-primary/20" />
-            <Loader2 className="absolute inset-0 m-auto size-24 animate-spin text-primary" />
+            <div className="size-20 rounded-full border-4 border-primary/20" />
+            <Loader2 className="absolute inset-0 m-auto size-20 animate-spin text-primary" />
             {revising ? (
-              <Wand2 className="absolute inset-0 m-auto size-8 text-primary" />
+              <Wand2 className="absolute inset-0 m-auto size-7 text-primary" />
             ) : (
-              <Sparkles className="absolute inset-0 m-auto size-8 text-primary" />
+              <Sparkles className="absolute inset-0 m-auto size-7 text-primary" />
             )}
           </div>
-          <div className="text-center">
-            <h2 className="text-2xl font-bold">
+          <div className="text-center px-6">
+            <h2 className="text-xl font-bold">
               {revising ? "Revizyon Yapiliyor" : "Görsel Oluşturuluyor"}
             </h2>
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-2 text-sm text-muted-foreground">
               {revising
                 ? "AI gorselinizi revize ediyor..."
                 : "AI desenini analiz edip ürüne uyguluyor..."}
             </p>
-            <p className="mt-1 text-sm text-muted-foreground/60">
-              Bu işlem 30-60 saniye sürebilir
+            <p className="mt-1 text-xs text-muted-foreground/60">
+              30-60 saniye sürebilir
             </p>
           </div>
-          <div className="mt-4 h-1.5 w-64 overflow-hidden rounded-full bg-muted">
-            <div className="h-full animate-pulse rounded-full bg-primary" style={{ width: "60%", animation: "loading 2s ease-in-out infinite" }} />
+          <div className="mt-2 h-1.5 w-48 overflow-hidden rounded-full bg-muted">
+            <div className="h-full rounded-full bg-primary" style={{ animation: "loading 2s ease-in-out infinite" }} />
           </div>
         </div>
         <style>{`
@@ -244,22 +260,43 @@ export default function GorselOlusturPage() {
   }
 
   return (
-    <div className="-m-4 lg:-m-6">
-      {/* Top: Generation form + Preview */}
-      <div className="flex min-h-[calc(100dvh-4rem)] flex-col lg:flex-row">
-        {/* Sol: Ayarlar */}
-        <div className="flex-1 space-y-5 overflow-y-auto border-e border-border bg-card/50 p-6">
-          {/* Header */}
-          <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-2xl bg-primary/10">
-              <Sparkles className="size-4 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold">AI Görsel Oluştur</h1>
-              <p className="text-xs text-muted-foreground">Desenini yükle, ürüne uygula</p>
-            </div>
-          </div>
+    <div className="-m-4 -mt-4 lg:-m-6 lg:-mt-6">
+      {/* Tabs */}
+      <div className="sticky -top-4 z-10 flex border-b border-border bg-background backdrop-blur-md lg:-top-6">
+        <button
+          onClick={() => setTab("create")}
+          className={cn(
+            "flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-all",
+            tab === "create"
+              ? "border-b-2 border-primary text-primary"
+              : "text-muted-foreground"
+          )}
+        >
+          <Sparkles className="size-4" />
+          Olustur
+        </button>
+        <button
+          onClick={() => setTab("history")}
+          className={cn(
+            "flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium transition-all",
+            tab === "history"
+              ? "border-b-2 border-primary text-primary"
+              : "text-muted-foreground"
+          )}
+        >
+          <Clock className="size-4" />
+          Gecmis
+          {historyTotal > 0 && (
+            <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium">
+              {historyTotal}
+            </span>
+          )}
+        </button>
+      </div>
 
+      {/* Tab content */}
+      {tab === "create" ? (
+        <div className="space-y-5 p-4 lg:p-6">
           {/* 1. Desen Yükle */}
           <div data-tour="gorsel-upload">
             <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
@@ -269,17 +306,17 @@ export default function GorselOlusturPage() {
             {!imagePreview ? (
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="flex w-full items-center gap-3 rounded-3xl border-2 border-dashed border-border/50 p-4 transition-colors hover:border-primary hover:bg-primary/5"
+                className="flex w-full items-center gap-3 rounded-2xl border-2 border-dashed border-border/50 p-4 transition-colors hover:border-primary hover:bg-primary/5"
               >
-                <Upload className="size-6 text-muted-foreground" />
+                <Upload className="size-5 text-muted-foreground" />
                 <div className="text-start">
-                  <span className="text-sm font-medium">Fotoğraf Seç</span>
-                  <p className="text-xs text-muted-foreground">Nakış, dantel veya desen fotoğrafı</p>
+                  <span className="text-sm font-medium">Fotograf Sec</span>
+                  <p className="text-xs text-muted-foreground">Nakis, dantel veya desen fotografi</p>
                 </div>
               </button>
             ) : (
               <div className="relative overflow-hidden rounded-2xl border border-border">
-                <Image src={imagePreview} alt="Desen" width={400} height={200} className="h-32 w-full object-cover" />
+                <Image src={imagePreview} alt="Desen" width={400} height={200} className="h-28 w-full object-cover" />
                 <button onClick={clearImage} className="absolute end-2 top-2 rounded-full bg-black/60 p-1.5 text-white hover:bg-black/80">
                   <X className="size-3" />
                 </button>
@@ -292,7 +329,7 @@ export default function GorselOlusturPage() {
           <div data-tour="gorsel-product-type">
             <label className="mb-2 flex items-center gap-2 text-sm font-semibold">
               <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">2</span>
-              Nereye Uygulansın?
+              Nereye Uygulansin?
             </label>
             <div className="grid grid-cols-3 gap-1.5">
               {PRODUCT_TYPES.map((type) => (
@@ -300,14 +337,14 @@ export default function GorselOlusturPage() {
                   key={type.key}
                   onClick={() => { setSelectedProduct(type.key); setResult(null); setError(null); }}
                   className={cn(
-                    "flex items-center gap-2 rounded-lg px-3 py-2.5 text-start transition-all",
+                    "flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-start transition-all",
                     selectedProduct === type.key
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted/50 hover:bg-muted"
                   )}
                 >
-                  <span className="text-base">{type.emoji}</span>
-                  <span className="text-xs font-medium">{type.label}</span>
+                  <span className="text-sm">{type.emoji}</span>
+                  <span className="text-[11px] font-medium">{type.label}</span>
                 </button>
               ))}
             </div>
@@ -315,7 +352,7 @@ export default function GorselOlusturPage() {
               <textarea
                 value={customProduct}
                 onChange={(e) => setCustomProduct(e.target.value)}
-                placeholder="Örn: Kırmızı kadife bir elbise, beyaz ipek mendil, ahşap tepsi..."
+                placeholder="Orn: Kirmizi kadife bir elbise..."
                 rows={2}
                 className="mt-2 w-full px-3 py-2 text-sm"
                 autoFocus
@@ -337,7 +374,7 @@ export default function GorselOlusturPage() {
                     key={ratio.key}
                     onClick={() => { setSelectedRatio(ratio.key); setResult(null); }}
                     className={cn(
-                      "flex flex-1 flex-col items-center gap-1 rounded-lg py-2.5 transition-all",
+                      "flex flex-1 flex-col items-center gap-1 rounded-xl py-2 transition-all",
                       selectedRatio === ratio.key
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted/50 hover:bg-muted"
@@ -360,13 +397,13 @@ export default function GorselOlusturPage() {
             <textarea
               value={detail}
               onChange={(e) => setDetail(e.target.value)}
-              placeholder="Örn: Arka plan sade olsun, çiçek motifleri büyük görünsün..."
+              placeholder="Orn: Arka plan sade olsun..."
               rows={2}
               className="w-full px-3 py-2 text-sm"
             />
           </div>
 
-          {/* Oluştur */}
+          {/* Generate button */}
           <button
             onClick={handleGenerate}
             disabled={!canGenerate}
@@ -380,22 +417,20 @@ export default function GorselOlusturPage() {
             )}
           >
             <Sparkles className="size-4" />
-            Görsel Oluştur
+            Gorsel Olustur
           </button>
-        </div>
 
-        {/* Sağ: Sonuç */}
-        <div className="flex flex-1 flex-col bg-muted/20 p-6" data-tour="gorsel-preview">
+          {/* Error */}
           {error && (
-            <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-center dark:border-red-800 dark:bg-red-950">
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-3 text-center dark:border-red-800 dark:bg-red-950">
               <p className="text-sm font-medium text-red-700 dark:text-red-300">{error}</p>
-              <button onClick={handleGenerate} disabled={!canGenerate} className="mt-1 text-xs text-red-500 underline hover:no-underline">Tekrar dene</button>
             </div>
           )}
 
-          {result ? (
-            <div className="flex flex-1 flex-col">
-              <div className="mb-3 flex items-center justify-between">
+          {/* Result */}
+          {result && (
+            <div ref={resultRef} className="space-y-3 scroll-mt-16">
+              <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-green-600 dark:text-green-400">
                   {result.productType}
                 </h3>
@@ -404,61 +439,62 @@ export default function GorselOlusturPage() {
                 </span>
               </div>
 
-              <div className="flex flex-1 items-center justify-center overflow-hidden rounded-2xl border border-border bg-white shadow-lg dark:bg-black/20">
+              <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-lg dark:bg-black/20">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={result.url}
-                  alt="AI ürün görseli"
-                  className="max-h-[60vh] w-full object-contain"
+                  alt="AI urun gorseli"
+                  className="w-full object-contain"
                 />
               </div>
 
               {result.patternDescription && (
-                <details className="mt-3 rounded-2xl border border-border bg-background p-2.5">
-                  <summary className="cursor-pointer text-xs font-medium text-muted-foreground">AI açıklaması</summary>
+                <details className="rounded-2xl border border-border bg-background p-2.5">
+                  <summary className="cursor-pointer text-xs font-medium text-muted-foreground">AI aciklamasi</summary>
                   <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{result.patternDescription}</p>
                 </details>
               )}
 
-              <div className="mt-3 flex gap-2">
+              {/* Actions */}
+              <div className="flex gap-2">
                 <button
                   onClick={() => handleDownloadImage(result.url)}
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-border py-2 text-xs font-medium hover:bg-muted"
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-border py-2.5 text-xs font-medium hover:bg-muted"
                 >
                   <Download className="size-3.5" />
-                  İndir
+                  Indir
                 </button>
                 <button
-                  onClick={handleCopyUrl}
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-border py-2 text-xs font-medium hover:bg-muted"
+                  onClick={() => handleCopyUrl(result.url)}
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-border py-2.5 text-xs font-medium hover:bg-muted"
                 >
                   {copied ? <Check className="size-3.5 text-green-500" /> : <Copy className="size-3.5" />}
-                  {copied ? "Kopyalandı!" : "URL Kopyala"}
+                  {copied ? "Kopyalandi!" : "URL Kopyala"}
                 </button>
                 <button
                   onClick={handleGenerate}
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary py-2.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
                 >
                   <ImagePlus className="size-3.5" />
                   Yeniden
                 </button>
               </div>
 
-              {/* Revision section */}
-              <div className="mt-4 rounded-2xl border border-border bg-background p-3">
+              {/* Revision */}
+              <div className="rounded-2xl border border-border bg-card p-3">
                 <label className="mb-2 flex items-center gap-2 text-xs font-semibold">
                   <Wand2 className="size-3.5 text-primary" />
                   Revize Et
                 </label>
                 <div className="flex gap-2">
-                  <textarea
+                  <input
+                    type="text"
                     value={revisionInstructions}
                     onChange={(e) => setRevisionInstructions(e.target.value)}
-                    placeholder="Orn: Arka plani beyaz yap, cicekleri buyut..."
-                    rows={2}
-                    className="flex-1 px-3 py-2 text-sm"
+                    placeholder="Orn: Arka plani beyaz yap..."
+                    className="flex-1 !rounded-xl !px-3 !py-2 !text-sm"
                     onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey && revisionInstructions.trim()) {
+                      if (e.key === "Enter" && revisionInstructions.trim()) {
                         e.preventDefault();
                         handleRevise(result.url);
                       }
@@ -468,171 +504,148 @@ export default function GorselOlusturPage() {
                     onClick={() => handleRevise(result.url)}
                     disabled={!revisionInstructions.trim()}
                     className={cn(
-                      "flex shrink-0 items-center justify-center rounded-xl px-4 text-xs font-medium transition-all",
+                      "flex shrink-0 items-center justify-center rounded-xl px-4 transition-all",
                       "disabled:cursor-not-allowed disabled:opacity-30",
                       revisionInstructions.trim()
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground"
                     )}
                   >
-                    <Send className="size-3.5" />
+                    <Send className="size-4" />
                   </button>
                 </div>
               </div>
             </div>
-          ) : (
-            <div className="flex flex-1 flex-col items-center justify-center text-center">
-              <div className="mb-3 flex size-16 items-center justify-center rounded-2xl bg-muted">
-                <Sparkles className="size-7 text-muted-foreground/40" />
-              </div>
-              <p className="text-sm font-medium text-muted-foreground">Önizleme</p>
-              <p className="mt-1 text-xs text-muted-foreground/60">
-                Desen yükle ve ürün seç, AI görseli burada görünecek
-              </p>
-            </div>
           )}
         </div>
-      </div>
-
-      {/* Bottom: History Gallery */}
-      <div className="border-t border-border p-4 lg:p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold">
-            Gecmis Gorseller
-            {historyTotal > 0 && (
-              <span className="ml-2 text-sm font-normal text-muted-foreground">
-                ({historyTotal})
-              </span>
-            )}
-          </h2>
-        </div>
-
-        {historyLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="size-8 animate-spin text-primary" />
-          </div>
-        ) : history.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border/50 py-16">
-            <ImageIcon className="mb-3 size-12 text-muted-foreground/30" />
-            <p className="text-sm font-medium text-muted-foreground">
-              Henuz gorsel yok
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground/60">
-              Yukaridan gorsel olustur, burada listelensin
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {history.map((img) => (
-                <div
-                  key={img.id}
-                  className="group overflow-hidden rounded-3xl border border-border/50 bg-card transition-all"
-                >
-                  {/* Image */}
-                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                    {img.resultImageUrl ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img
-                        src={img.resultImageUrl}
-                        alt={img.productType}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <ImageIcon className="size-10 text-muted-foreground/20" />
-                      </div>
-                    )}
-
-                    {/* Overlay actions */}
-                    <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100">
-                      <div className="flex w-full gap-1.5 p-3">
-                        <button
-                          onClick={() => {
-                            setResult({
-                              url: img.resultImageUrl,
-                              patternDescription: img.patternDescription || "",
-                              productType: img.productType,
-                              aspectRatio: img.aspectRatio,
-                            });
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                          className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-white/90 py-1.5 text-[11px] font-medium text-black backdrop-blur-sm hover:bg-white"
-                        >
-                          <Wand2 className="size-3" /> Revize Et
-                        </button>
-                        <button
-                          onClick={() => handleDownloadImage(img.resultImageUrl)}
-                          className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-white/90 py-1.5 text-[11px] font-medium text-black backdrop-blur-sm hover:bg-white"
-                        >
-                          <Download className="size-3" /> Indir
-                        </button>
-                        <button
-                          onClick={() => handleDeleteHistory(img.id)}
-                          className="flex items-center justify-center rounded-xl bg-red-500/90 px-2.5 py-1.5 text-white backdrop-blur-sm hover:bg-red-600"
-                        >
-                          <Trash2 className="size-3" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Info */}
-                  <div className="p-3">
-                    <div className="flex items-center gap-1.5">
-                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
-                        {img.productType}
-                      </span>
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                        {img.aspectRatio}
-                      </span>
-                    </div>
-                    {img.detail && (
-                      <p className="mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
-                        {img.detail}
-                      </p>
-                    )}
-                    <p className="mt-1.5 text-[10px] text-muted-foreground/50">
-                      {new Date(img.createdAt).toLocaleDateString("tr-TR", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-                </div>
-              ))}
+      ) : (
+        /* History tab */
+        <div className="p-4 lg:p-6">
+          {historyLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="size-8 animate-spin text-primary" />
             </div>
+          ) : history.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <ImageIcon className="mb-3 size-12 text-muted-foreground/30" />
+              <p className="text-sm font-medium text-muted-foreground">Henuz gorsel yok</p>
+              <p className="mt-1 text-xs text-muted-foreground/60">Gorsel olustur, burada listelensin</p>
+              <button
+                onClick={() => setTab("create")}
+                className="mt-4 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+              >
+                Gorsel Olustur
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                {history.map((img) => (
+                  <div
+                    key={img.id}
+                    className="group overflow-hidden rounded-2xl border border-border/50 bg-card"
+                  >
+                    <div className="relative aspect-square overflow-hidden bg-muted">
+                      {img.resultImageUrl ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={img.resultImageUrl}
+                          alt={img.productType}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center">
+                          <ImageIcon className="size-8 text-muted-foreground/20" />
+                        </div>
+                      )}
 
-            {/* Pagination */}
-            {historyTotalPages > 1 && (
-              <div className="mt-6 flex items-center justify-center gap-2">
-                <button
-                  onClick={() => fetchHistory(historyPage - 1)}
-                  disabled={historyPage <= 1}
-                  className="inline-flex items-center gap-1 rounded-2xl border border-border/50 px-3 py-1.5 text-sm font-medium transition-all hover:bg-muted/50 disabled:opacity-40"
-                >
-                  <ChevronLeft className="size-4" />
-                  Onceki
-                </button>
-                <span className="px-3 text-sm text-muted-foreground">
-                  {historyPage} / {historyTotalPages}
-                </span>
-                <button
-                  onClick={() => fetchHistory(historyPage + 1)}
-                  disabled={historyPage >= historyTotalPages}
-                  className="inline-flex items-center gap-1 rounded-2xl border border-border/50 px-3 py-1.5 text-sm font-medium transition-all hover:bg-muted/50 disabled:opacity-40"
-                >
-                  Sonraki
-                  <ChevronRight className="size-4" />
-                </button>
+                      {/* Overlay — always visible on mobile (no hover) */}
+                      <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-100 lg:opacity-0 lg:transition-opacity lg:group-hover:opacity-100">
+                        <div className="flex w-full gap-1 p-2">
+                          <button
+                            onClick={() => {
+                              setResult({
+                                url: img.resultImageUrl,
+                                patternDescription: img.patternDescription || "",
+                                productType: img.productType,
+                                aspectRatio: img.aspectRatio,
+                              });
+                              setTab("create");
+                            }}
+                            className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-white/90 py-1.5 text-[10px] font-medium text-black"
+                          >
+                            <Wand2 className="size-3" /> Revize
+                          </button>
+                          <button
+                            onClick={() => handleDownloadImage(img.resultImageUrl)}
+                            className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-white/90 py-1.5 text-[10px] font-medium text-black"
+                          >
+                            <Download className="size-3" /> Indir
+                          </button>
+                          <button
+                            onClick={() => handleDeleteHistory(img.id)}
+                            className="flex items-center justify-center rounded-lg bg-red-500/90 px-2 py-1.5 text-white"
+                          >
+                            <Trash2 className="size-3" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-2">
+                      <div className="flex items-center gap-1">
+                        <span className="truncate rounded-md bg-primary/10 px-1.5 py-0.5 text-[9px] font-medium text-primary">
+                          {img.productType}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-[9px] text-muted-foreground/50">
+                        {new Date(img.createdAt).toLocaleDateString("tr-TR", {
+                          day: "numeric",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
-          </>
-        )}
-      </div>
+
+              {/* Pagination */}
+              {historyTotalPages > 1 && (
+                <div className="mt-6 flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => fetchHistory(historyPage - 1)}
+                    disabled={historyPage <= 1}
+                    className="inline-flex items-center gap-1 rounded-xl border border-border/50 px-3 py-1.5 text-sm font-medium disabled:opacity-40"
+                  >
+                    <ChevronLeft className="size-4" />
+                  </button>
+                  <span className="px-3 text-sm text-muted-foreground">
+                    {historyPage} / {historyTotalPages}
+                  </span>
+                  <button
+                    onClick={() => fetchHistory(historyPage + 1)}
+                    disabled={historyPage >= historyTotalPages}
+                    className="inline-flex items-center gap-1 rounded-xl border border-border/50 px-3 py-1.5 text-sm font-medium disabled:opacity-40"
+                  >
+                    <ChevronRight className="size-4" />
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+      {/* Toast notification */}
+      {showToast && (
+        <div className="fixed inset-x-0 top-16 z-50 flex justify-center px-4 animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center gap-2 rounded-2xl bg-green-600 px-5 py-3 text-sm font-medium text-white shadow-lg">
+            <Check className="size-4" />
+            Gorsel hazir! Asagida gorebilirsin
+          </div>
+        </div>
+      )}
     </div>
   );
 }

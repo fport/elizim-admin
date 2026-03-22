@@ -9,7 +9,7 @@ import { resolveSteps } from "@/lib/tour-steps";
 import { usePathname, useRouter } from "next/navigation";
 import { TourTooltip } from "./tour-tooltip";
 
-const Joyride = dynamic(() => import("react-joyride"), { ssr: false });
+const Joyride = dynamic(() => import("react-joyride").then((mod) => mod.default), { ssr: false });
 
 const tourIdToPath: Record<TourId, string> = {
   admin: "/",

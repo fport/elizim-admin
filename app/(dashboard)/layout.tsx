@@ -514,9 +514,9 @@ export default function DashboardLayout({
             {children}
           </main>
         </div>
-        <BottomNav />
-        <TourProvider />
       </div>
+      <BottomNav />
+      <TourProvider />
     </QueryProvider>
   );
 }

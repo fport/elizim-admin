@@ -15,15 +15,22 @@ import {
   EyeOff,
   Download,
   Sparkles,
+  ImagePlus,
+  X,
+  Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { aiApi, customDesignsApi, type CustomDesign } from "@/lib/api";
+import { downloadImage } from "@/lib/download";
 
 export default function TasarimUreticiPage() {
   const [prompt, setPrompt] = useState("");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [referenceFile, setReferenceFile] = useState<File | null>(null);
+  const [referencePreview, setReferencePreview] = useState<string | null>(null);
 
   // List
   const [designs, setDesigns] = useState<CustomDesign[]>([]);
@@ -32,6 +39,28 @@ export default function TasarimUreticiPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Revision
+  const [revisingId, setRevisingId] = useState<string | null>(null);
+  const [revisionText, setRevisionText] = useState("");
+  const [revisionLoading, setRevisionLoading] = useState(false);
+
+  async function handleReviseDesign(design: CustomDesign) {
+    if (!revisionText.trim() || !design.imageUrl) return;
+    setRevisionLoading(true);
+
+    try {
+      const data = await aiApi.editImage(design.imageUrl, revisionText.trim(), "tasarim");
+      await customDesignsApi.update(design.id, { imageUrl: data.url });
+      setRevisingId(null);
+      setRevisionText("");
+      await fetchDesigns(page);
+    } catch {
+      // ignore
+    } finally {
+      setRevisionLoading(false);
+    }
+  }
 
   async function fetchDesigns(p = page) {
     setLoading(true);
@@ -62,6 +91,21 @@ export default function TasarimUreticiPage() {
     }
   }, [prompt]);
 
+  function handleRefFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setReferenceFile(file);
+    const reader = new FileReader();
+    reader.onload = () => setReferencePreview(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  function clearRefFile() {
+    setReferenceFile(null);
+    setReferencePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
   async function handleGenerate() {
     if (!prompt.trim()) return;
     setGenerating(true);
@@ -69,8 +113,9 @@ export default function TasarimUreticiPage() {
 
     try {
       const fileName = `design-${Date.now()}.webp`;
-      await aiApi.generateDesign(prompt.trim(), fileName);
+      await aiApi.generateDesign(prompt.trim(), fileName, undefined, referenceFile || undefined);
       setPrompt("");
+      clearRefFile();
       await fetchDesigns(1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Bir hata olustu");
@@ -105,23 +150,11 @@ export default function TasarimUreticiPage() {
   }
 
   async function handleDownload(url: string, title: string) {
-    try {
-      const res = await fetch(url);
-      const blob = await res.blob();
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${title.replace(/[^a-zA-Z0-9-_]/g, "_")}.webp`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
-    } catch {
-      window.open(url, "_blank");
-    }
+    await downloadImage(url, `${title.replace(/[^a-zA-Z0-9-_]/g, "_")}.webp`);
   }
 
   // Fullscreen loading overlay
-  if (generating) {
+  if (generating || revisionLoading) {
     return (
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/95 backdrop-blur-sm">
         <div className="flex flex-col items-center gap-6">
@@ -131,9 +164,13 @@ export default function TasarimUreticiPage() {
             <Wand2 className="absolute inset-0 m-auto size-8 text-primary" />
           </div>
           <div className="text-center">
-            <h2 className="text-2xl font-bold">Tasarim Olusturuluyor</h2>
+            <h2 className="text-2xl font-bold">
+              {revisionLoading ? "Revizyon Yapiliyor" : "Tasarim Olusturuluyor"}
+            </h2>
             <p className="mt-2 text-muted-foreground">
-              AI gorselinizi olusturuyor ve kaydediyor...
+              {revisionLoading
+                ? "AI gorselinizi revize ediyor..."
+                : "AI gorselinizi olusturuyor ve kaydediyor..."}
             </p>
             <p className="mt-1 text-sm text-muted-foreground/60">
               Bu islem 30-60 saniye surebilir
@@ -174,7 +211,38 @@ export default function TasarimUreticiPage() {
 
       {/* Chat-like input */}
       <div className="glass-card rounded-3xl p-3">
+        {/* Reference image preview */}
+        {referencePreview && (
+          <div className="mx-1 mb-2 flex items-center gap-2">
+            <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-border">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={referencePreview} alt="Referans" className="h-full w-full object-cover" />
+              <button
+                onClick={clearRefFile}
+                className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity hover:opacity-100"
+              >
+                <X className="size-3.5 text-white" />
+              </button>
+            </div>
+            <span className="text-[11px] text-muted-foreground">Referans gorsel eklendi</span>
+          </div>
+        )}
+
         <div className="flex items-end gap-2">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="mb-0.5 flex shrink-0 items-center justify-center rounded-2xl p-3 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+            title="Referans gorsel ekle"
+          >
+            <ImagePlus className="size-[18px]" />
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleRefFileSelect}
+            className="hidden"
+          />
           <div className="relative flex-1">
             <Sparkles className="absolute left-4 top-3 size-4 text-primary/40" />
             <textarea
@@ -286,6 +354,15 @@ export default function TasarimUreticiPage() {
                         {d.imageUrl && (
                           <>
                             <button
+                              onClick={() => {
+                                setRevisingId(revisingId === d.id ? null : d.id);
+                                setRevisionText("");
+                              }}
+                              className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-white/90 py-1.5 text-[11px] font-medium text-black backdrop-blur-sm hover:bg-white"
+                            >
+                              <Pencil className="size-3" /> Revize
+                            </button>
+                            <button
                               onClick={() => handleDownload(d.imageUrl!, d.title)}
                               className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-white/90 py-1.5 text-[11px] font-medium text-black backdrop-blur-sm hover:bg-white"
                             >
@@ -333,6 +410,32 @@ export default function TasarimUreticiPage() {
                         minute: "2-digit",
                       })}
                     </p>
+
+                    {/* Inline revision input */}
+                    {revisingId === d.id && (
+                      <div className="mt-2 flex gap-1.5">
+                        <input
+                          type="text"
+                          value={revisionText}
+                          onChange={(e) => setRevisionText(e.target.value)}
+                          placeholder="Neyi degistirmek istiyorsun?"
+                          className="!rounded-xl !px-2.5 !py-1.5 !text-[11px]"
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && revisionText.trim()) {
+                              handleReviseDesign(d);
+                            }
+                          }}
+                        />
+                        <button
+                          onClick={() => handleReviseDesign(d)}
+                          disabled={!revisionText.trim()}
+                          className="shrink-0 rounded-xl bg-primary px-2.5 py-1.5 text-[11px] font-medium text-primary-foreground disabled:opacity-30"
+                        >
+                          <Wand2 className="size-3" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

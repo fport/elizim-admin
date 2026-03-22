@@ -185,7 +185,7 @@ export default function DashboardLayout({
 
   return (
     <QueryProvider>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-dvh overflow-hidden">
         <Sidebar
           open={sidebarOpen}
           onClose={() => setSidebarOpen(false)}

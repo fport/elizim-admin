@@ -328,17 +328,53 @@ export const aiApi = {
   generateDesign: async (
     prompt: string,
     fileName: string,
-    title?: string
+    title?: string,
+    imageFile?: File
   ): Promise<{ success: boolean; url: string; fileName: string; key: string; designId: string }> => {
-    const res = await fetch(`${API_URL}/api/ai/generate-design`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, fileName, title }),
-    });
+    let res: Response;
+
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append("prompt", prompt);
+      formData.append("fileName", fileName);
+      if (title) formData.append("title", title);
+      formData.append("image", imageFile);
+
+      res = await fetch(`${API_URL}/api/ai/generate-design`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+    } else {
+      res = await fetch(`${API_URL}/api/ai/generate-design`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, fileName, title }),
+      });
+    }
+
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.error || "Tasarim gorseli olusturulamadi");
+    }
+    return res.json();
+  },
+
+  editImage: async (
+    imageUrl: string,
+    instructions: string,
+    sourceType: "gorsel" | "tasarim" = "gorsel"
+  ): Promise<{ url: string; description: string }> => {
+    const res = await fetch(`${API_URL}/api/ai/edit-image`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imageUrl, instructions, sourceType }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Revizyon yapilamadi");
     }
     return res.json();
   },
@@ -428,6 +464,43 @@ export const customDesignsApi = {
       method: "DELETE",
     });
     if (!res.ok) throw new Error("Tasarim silinemedi");
+  },
+};
+
+// ── Generated Images ──
+
+export interface GeneratedImage {
+  id: string;
+  sourceImageUrl: string | null;
+  resultImageUrl: string;
+  r2Key: string | null;
+  productType: string;
+  aspectRatio: string;
+  detail: string | null;
+  patternDescription: string | null;
+  createdAt: string;
+}
+
+export const generatedImagesApi = {
+  async getAll(
+    page = 1,
+    limit = 12
+  ): Promise<{
+    images: GeneratedImage[];
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  }> {
+    const res = await fetchWithAuth(
+      `/api/generated-images?page=${page}&limit=${limit}`
+    );
+    if (!res.ok) throw new Error("Gorseller yuklenemedi");
+    return res.json();
+  },
+
+  async delete(id: string): Promise<void> {
+    const res = await fetchWithAuth(`/api/generated-images/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Gorsel silinemedi");
   },
 };
 

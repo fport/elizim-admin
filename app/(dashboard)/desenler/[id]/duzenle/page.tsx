@@ -25,7 +25,7 @@ function generateSlug(title: string): string {
 }
 
 const AVAILABLE_FORMATS = ["DST", "VP3", "EXP"];
-const DIFFICULTY_OPTIONS = ["Kolay", "Orta", "Zor"];
+const TECHNIQUE_OPTIONS = ["Maraş İşi", "Kanaviçe", "Logo"];
 
 export default function EditPatternPage({
   params,
@@ -44,7 +44,7 @@ export default function EditPatternPage({
   const [tags, setTags] = useState("");
   const [previewImageUrl, setPreviewImageUrl] = useState("");
   const [formats, setFormats] = useState<string[]>(["DST", "VP3", "EXP"]);
-  const [difficulty, setDifficulty] = useState("Orta");
+  const [difficulty, setDifficulty] = useState("");
   const [stitchCount, setStitchCount] = useState("");
   const [dimensions, setDimensions] = useState("");
   const [colorCount, setColorCount] = useState("");
@@ -71,7 +71,7 @@ export default function EditPatternPage({
       setTags(pattern.tags || "");
       setPreviewImageUrl(pattern.previewImageUrl || "");
       setFormats(pattern.formats.split(",").map((f) => f.trim()));
-      setDifficulty(pattern.difficulty || "Orta");
+      setDifficulty(pattern.difficulty || "");
       setStitchCount(pattern.stitchCount ? String(pattern.stitchCount) : "");
       setDimensions(pattern.dimensions || "");
       setColorCount(pattern.colorCount ? String(pattern.colorCount) : "");
@@ -252,14 +252,15 @@ export default function EditPatternPage({
 
             <div>
               <label className="mb-1.5 block text-sm font-medium text-foreground">
-                Zorluk
+                Nakis Turu
               </label>
               <select
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value)}
                 className="h-10 w-full text-sm"
               >
-                {DIFFICULTY_OPTIONS.map((d) => (
+                <option value="">Seciniz</option>
+                {TECHNIQUE_OPTIONS.map((d) => (
                   <option key={d} value={d}>
                     {d}
                   </option>
